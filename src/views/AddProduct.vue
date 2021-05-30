@@ -16,47 +16,57 @@
         <span class="material-icons"> highlight_off </span>
       </button>
     </div>
-    <section class="add-product-form-container">
-      <section class="edit-product-info">
-        <label for="edit-product-name-field">Product Name</label>
+    <section class="edit-product-info">
+      <label for="edit-product-name-field">Product Name</label>
+      <input
+        type="text"
+        placeholder="product name"
+        v-model="name"
+        class="edit-product-name-field"
+      />
+      <label for="edit-product-intake-price">Intake Price</label>
+      <div class="edit-product-price">
         <input
-          type="text"
-          placeholder="product name"
-          v-model="name"
-          class="edit-product-name-field"
+          id="edit-product-intake-price"
+          type="number"
+          placeholder="intake price"
+          v-model="intakePrice"
+          class="edit-product-price-field"
         />
-        <label for="edit-product-intake-price">Intake Price</label>
-        <div class="edit-product-price">
-          <input
-            id="edit-product-intake-price"
-            type="number"
-            placeholder="intake price"
-            v-model="intakePrice"
-            class="edit-product-price-field"
-          />
-          <h4 class="kg">/kg</h4>
-        </div>
-        <label for="edit-product-selling-price">Selling Price</label>
-        <div class="edit-product-price">
-          <input
-            type="number"
-            placeholder="selling price"
-            v-model="sellingPrice"
-            class="edit-product-price-field"
-            id="edit-product-selling-price"
-          />
-          <h4 class="kg">/kg</h4>
-        </div>
-        <div class="profit">
-          <h4>Profit: {{ calculateProfit }}</h4>
-        </div>
-      </section>
+        <h6 class="kg">/kg</h6>
+      </div>
+      <label for="edit-product-selling-price">Selling Price</label>
+      <div class="edit-product-price">
+        <input
+          type="number"
+          placeholder="selling price"
+          v-model="sellingPrice"
+          class="edit-product-price-field"
+          id="edit-product-selling-price"
+        />
+        <h6 class="kg">/kg</h6>
+      </div>
+      <div class="profit">
+        <h5>Profit: {{ calculateProfit }}</h5>
+      </div>
     </section>
 
-    <button class="add-save-btn"><h4>Save</h4></button>
+    <button class="add-save-btn"><h5>Save</h5></button>
     <button class="add-discard-btn" @click="closeDialog()">
-      <h4>Discard</h4>
+      <h5>Discard</h5>
     </button>
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1440 320"
+      class="base-wave"
+    >
+      <path
+        fill="#0099ff"
+        fill-opacity="1"
+        d="M0,192L48,202.7C96,213,192,235,288,245.3C384,256,480,256,576,240C672,224,768,192,864,160C960,128,1056,96,1152,69.3C1248,43,1344,21,1392,10.7L1440,0L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+      ></path>
+    </svg>
   </div>
 </template>
 
@@ -82,7 +92,7 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.$emit("closeAddDialog");
+      this.$router.go(-1);
     },
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
@@ -158,8 +168,7 @@ export default {
 }
 
 .add-product-container {
-  width: 100%;
-  height: 100vh;
+  margin: 0rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -172,6 +181,7 @@ export default {
   color: white;
   margin: 0.5rem 0rem;
   padding: 0.5rem;
+  border-radius: 1rem;
 }
 
 @media only screen and (min-width: 600px) {
@@ -180,16 +190,19 @@ export default {
   .add-product-form-container,
   .add-save-btn,
   .add-discard-btn {
-    width: 60%;
+    width: 50%;
   }
 }
 @media only screen and (min-width: 1440px) {
   /* For tablet: */
   .image-upload-label,
-  .add-product-form-container,
+  .add-product-form-container {
+    width: 50%;
+  }
+
   .add-save-btn,
   .add-discard-btn {
-    width: 50%;
+    width: 20%;
   }
 }
 </style>

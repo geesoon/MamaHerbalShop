@@ -7,10 +7,10 @@
       </div>
       <div class="product-price">
         <div class="intake-price">
-          {{ this.formatCurrency(productInfo.intakePrice) }}
+          <h5>{{ this.formatCurrency(productInfo.intakePrice) }}</h5>
         </div>
         <div class="selling-price">
-          {{ this.formatCurrency(productInfo.sellingPrice) }}
+          <h5>{{ this.formatCurrency(productInfo.sellingPrice) }}</h5>
         </div>
       </div>
     </div>
@@ -43,10 +43,37 @@ export default {
   align-items: center;
   background: var(--primary);
   border-radius: 2rem;
-  width: 90%;
+  width: 100%;
   height: 40vh;
   margin: 1rem;
-  box-shadow: 5px 5px 5px 5px var(--accent);
+  -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* https://tobiasahlin.com/demo/animate-box-shadow/ */
+.card-container::after {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--primary);
+  border-radius: 2rem;
+  width: 100%;
+  height: 20vh;
+  margin: 1rem;
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+  -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.card-container:hover {
+  transform: scale(1.2, 1.2);
+}
+
+.card-container:hover::after {
+  opacity: 1;
 }
 
 .product-picture {
@@ -83,7 +110,6 @@ export default {
 .intake-price,
 .selling-price {
   color: white;
-  font-size: 1rem;
   text-align: left;
 }
 
@@ -92,7 +118,7 @@ export default {
   .card-container {
     width: 100%;
     margin: 0;
-    height: 50vh;
+    height: 40vh;
   }
 }
 </style>
