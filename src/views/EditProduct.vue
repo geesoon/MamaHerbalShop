@@ -1,5 +1,6 @@
 <template>
   <div class="edit-product-container">
+    <Header />
     <img
       class="edit-product-picture"
       src="https://secure.ap-tescoassets.com/assets/MY/103/9555117007103/ShotType1_540x540.jpg"
@@ -22,7 +23,7 @@
           class="edit-product-price-field"
           id="edit-product-intake-price"
         />
-        <h4 class="kg">/kg</h4>
+        <h6 class="kg">/kg</h6>
       </div>
       <label for="edit-product-selling-price">Selling Price</label>
       <div class="edit-product-price">
@@ -33,15 +34,15 @@
           class="edit-product-price-field"
           id="edit-product-selling-price"
         />
-        <h4 class="kg">/kg</h4>
+        <h6 class="kg">/kg</h6>
       </div>
       <div class="profit">
-        <h4>Profit: {{ calculateProfit }}</h4>
+        <h5>Profit: {{ calculateProfit }}</h5>
       </div>
     </section>
-    <button class="edit-save-btn"><h4>Save</h4></button>
+    <button class="edit-save-btn"><h5>Save</h5></button>
     <button class="edit-discard-btn" @click="closeDialog()">
-      <h4>Discard</h4>
+      <h5>Discard</h5>
     </button>
     <button class="remove-product-btn" @click="showConfirmationPrompt = true">
       <span class="material-icons"> delete </span>
@@ -52,20 +53,34 @@
       <h4>Confirm Remove This Product?</h4>
       <div class="confirmation-btn-bar">
         <button class="confirm-remove-btn" @click="confirmRemoveProduct()">
-          Confirm
+          <h5>Confirm</h5>
         </button>
         <button
           class="cancel-remove-btn"
           @click="showConfirmationPrompt = false"
         >
-          Cancel
+          <h5>Cancel</h5>
         </button>
       </div>
     </div>
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1440 320"
+      class="base-wave"
+    >
+      <path
+        fill="#0099ff"
+        fill-opacity="1"
+        d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+      ></path>
+    </svg>
   </div>
 </template>
 
 <script>
+import Header from "@/components/Header.vue";
+
 export default {
   data: () => {
     return {
@@ -74,6 +89,9 @@ export default {
       sellingPrice: "",
       showConfirmationPrompt: false,
     };
+  },
+  components: {
+    Header,
   },
   computed: {
     getEditProduct() {
@@ -88,7 +106,7 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.$emit("closeEditDialog");
+      this.$router.go(-1);
     },
     confirmRemoveProduct() {
       this.showConfirmationPrompt = false;
@@ -124,8 +142,8 @@ export default {
 .confirmation-btn-bar {
   margin: 1rem 0rem;
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -140,17 +158,18 @@ export default {
 .confirm-remove-btn,
 .cancel-remove-btn {
   color: white;
-  padding: 1rem 2rem;
-  color: white;
+  border-radius: 1rem;
+  width: 50%;
+  padding: 1rem;
+  margin: 1rem 0rem;
 }
 
 .edit-product-container {
-  width: 90%;
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
+  margin: 0rem 1rem;
 }
 
 .edit-product-picture {
@@ -164,7 +183,11 @@ export default {
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  margin-top: 1rem;
+  margin: 2rem 0rem;
+  border-radius: 1rem;
+  box-shadow: 5px 5px 5px 5px var(--accent);
+  padding: 2rem;
+  border: 0.5px solid var(--accent);
 }
 
 .edit-product-price-field,
@@ -179,7 +202,7 @@ export default {
 }
 
 .kg {
-  width: 20%;
+  width: 15%;
   text-align: right;
 }
 
@@ -197,7 +220,7 @@ export default {
 .edit-product-price {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
 }
@@ -210,10 +233,11 @@ export default {
 
 .edit-save-btn,
 .edit-discard-btn {
-  width: 100%;
+  width: 90%;
   color: white;
   margin: 0.5rem 0rem;
   padding: 0.5rem;
+  border-radius: 1rem;
 }
 
 .remove-product-btn {
@@ -238,27 +262,31 @@ export default {
 
 @media only screen and (min-width: 600px) {
   /* For tablet: */
-  .edit-product-container {
+  .edit-product-info {
     width: 80%;
     background: white;
   }
 }
 @media only screen and (min-width: 768px) {
   /* For desktop: */
-  .edit-product-container {
-    width: 70%;
-    background: white;
+  .edit-product-info {
+    width: 50%;
+  }
+  .edit-save-btn,
+  .edit-discard-btn {
+    width: 50%;
   }
 
   .confirmation-prompt {
     width: 50%;
   }
 }
+
 @media only screen and (min-width: 1440px) {
   /* For desktop: */
-  .edit-product-container {
-    width: 50%;
-    background: white;
+  .edit-save-btn,
+  .edit-discard-btn {
+    width: 20%;
   }
 }
 </style>

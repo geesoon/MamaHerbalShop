@@ -1,15 +1,21 @@
 <template>
   <div class="catalogue-container">
+    <Header />
     <div class="search-bar">
-      <input
-        type="text"
-        class="search-field"
-        placeholder="search"
-        v-model="search"
-      />
-      <span class="material-icons search-bar-icon"> search </span>
+      <div class="search-container">
+        <input
+          type="text"
+          class="search-field"
+          placeholder="search"
+          v-model="search"
+        />
+        <div class="search-icon-container">
+          <span class="material-icons search-bar-icon" @click="filterProduct()">
+            search
+          </span>
+        </div>
+      </div>
     </div>
-
     <!-- Product Card List -->
     <section class="product-list" v-if="search == '' && products.length != 0">
       <ProductCard
@@ -40,32 +46,29 @@
       <h4>No result</h4>
     </section>
 
-    <div
-      class="background-mask"
-      v-show="showEditProductDialog || showAddProductDialog"
-    ></div>
-
-    <!-- Edit Product Dialog -->
-    <section v-if="showEditProductDialog" class="edit-product-dialog">
-      <EditProduct @closeEditDialog="closeEditDialog()" />
-    </section>
-
-    <!-- Add Product Dialog -->
-    <section v-if="showAddProductDialog" class="add-product-dialog">
-      <AddProduct @closeAddDialog="closeAddDialog()" />
-    </section>
-
     <!-- Floating Add Product Button -->
     <button id="add-fab" @click="showAddProduct()">
       <span class="material-icons"> add </span>
     </button>
+
+    <!-- Base Wave -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1440 320"
+      class="base-wave"
+    >
+      <path
+        fill="#0099ff"
+        fill-opacity="0.8"
+        d="M0,64L34.3,106.7C68.6,149,137,235,206,234.7C274.3,235,343,149,411,133.3C480,117,549,171,617,208C685.7,245,754,267,823,277.3C891.4,288,960,288,1029,245.3C1097.1,203,1166,117,1234,74.7C1302.9,32,1371,32,1406,32L1440,32L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"
+      ></path>
+    </svg>
   </div>
 </template>
 
 <script>
+import Header from "@/components/Header.vue";
 import ProductCard from "@/components/ProductCard.vue";
-import EditProduct from "@/components/EditProduct.vue";
-import AddProduct from "@/components/AddProduct.vue";
 
 export default {
   data: () => {
@@ -73,6 +76,17 @@ export default {
       products: [
         { name: "黑米", intakePrice: "10", sellingPrice: "18", productPic: "" },
         { name: "黑枣", intakePrice: "10", sellingPrice: "18", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
+        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
         { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
         {
           name: "当归",
@@ -89,8 +103,7 @@ export default {
   },
   components: {
     ProductCard,
-    EditProduct,
-    AddProduct,
+    Header,
   },
   watch: {
     search: function () {
@@ -100,26 +113,31 @@ export default {
     },
   },
   methods: {
+    filterProduct() {
+      this.searchResult = this.products.filter((product) => {
+        return product.name.includes(this.search);
+      });
+    },
     showEditProduct(product) {
       this.$store.commit("setEditProduct", product);
-      this.showEditProductDialog = true;
+      this.$router.push({ name: "editProduct" });
     },
     showAddProduct() {
       document.getElementById("add-fab").style.display = "none";
-      this.showAddProductDialog = true;
-    },
-    closeEditDialog() {
-      this.showEditProductDialog = false;
-    },
-    closeAddDialog() {
-      document.getElementById("add-fab").style.display = "block";
-      this.showAddProductDialog = false;
+      this.$router.push({ name: "addProduct" });
     },
   },
 };
 </script>
 
 <style>
+.base-wave {
+  position: fixed;
+  bottom: 0;
+  z-index: -1;
+  width: 100%;
+}
+
 #add-fab {
   width: 64px;
   height: 64px;
@@ -140,19 +158,28 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  padding: 0rem 2rem;
 }
 
 .search-bar {
-  flex: 1;
-  margin: 1rem 0rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  width: 90%;
+  margin: 0rem 0rem 2rem 0rem;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .search-field {
-  padding: 0.5rem;
+  padding: 0.8rem;
   flex: 1;
   margin-right: 0.5rem;
   box-shadow: 2px 2px 2px 2px var(--accent);
@@ -163,10 +190,15 @@ export default {
   background: var(--accent);
 }
 
-.search-bar-icon {
+.search-icon-container {
   position: relative;
+  width: 10%;
+  text-align: center;
+}
+
+.search-bar-icon {
   cursor: pointer;
-  width: 20%;
+  font-size: var(--icon-medium);
 }
 
 .search-field::placeholder,
@@ -182,7 +214,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 90%;
+  width: 100%;
 }
 
 .background-mask {
@@ -216,24 +248,33 @@ export default {
     grid-gap: 1rem;
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .search-bar {
+    justify-content: flex-end;
+  }
+
+  .search-container {
+    width: 20%;
+  }
 }
 
 @media only screen and (min-width: 1024px) {
   /* For tablet: */
   .product-list {
     display: grid;
-    width: 95%;
+    width: 100%;
     grid-gap: 1rem;
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
 @media only screen and (min-width: 1440px) {
   /* For large desktop: */
   .product-list {
-    display: grid;
-    width: 95%;
-    grid-gap: 1rem;
     grid-template-columns: repeat(4, 1fr);
+    grid-gap: 4rem;
+    margin: 2rem 0rem;
+    width: 90%;
   }
 }
 </style>

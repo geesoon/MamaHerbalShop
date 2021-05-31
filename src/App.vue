@@ -12,8 +12,11 @@ export default {};
 :root {
   --primary: #0f0326;
   --secondary: #41453e;
-  --accent: #f5f5f5;
+  --accent: #e2e2e2;
   --danger: #ff3030;
+  --icon-small: 24px;
+  --icon-medium: 48px;
+  --icon-large: 64px;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -32,6 +35,10 @@ button {
   border: none;
 }
 
+button:hover {
+  opacity: 0.9;
+}
+
 h1 {
   font-size: 4rem;
 }
@@ -40,7 +47,19 @@ h2 {
   font-size: 3rem;
 }
 
+h3 {
+  font-size: 2.5rem;
+}
+
 h4 {
+  font-size: 2rem;
+}
+
+h5 {
+  font-size: 1.5rem;
+}
+
+h6 {
   font-size: 1.3rem;
 }
 
