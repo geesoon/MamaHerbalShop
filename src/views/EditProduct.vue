@@ -1,11 +1,13 @@
 <template>
   <div class="edit-product-container">
-    <Header />
+    <!-- <Header /> -->
     <img
+      v-if="getEditProduct.picture != ''"
       class="edit-product-picture"
-      src="https://secure.ap-tescoassets.com/assets/MY/103/9555117007103/ShotType1_540x540.jpg"
+      :src="getEditProduct.picture"
       :alt="getEditProduct.name"
     />
+    <img v-else src="../assets/no-image.svg" class="edit-product-picture" />
     <section class="edit-product-info">
       <label for="edit-product-name-field">Product Name</label>
       <input
@@ -40,7 +42,9 @@
         <h5>Profit: {{ calculateProfit }}</h5>
       </div>
     </section>
-    <button class="edit-save-btn"><h5>Save</h5></button>
+    <button class="edit-save-btn" @click="updateProduct()">
+      <h5>Save</h5>
+    </button>
     <button class="edit-discard-btn" @click="closeDialog()">
       <h5>Discard</h5>
     </button>
@@ -75,15 +79,19 @@
         d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
       ></path>
     </svg>
+    <Loader v-if="isLoading" />
   </div>
 </template>
 
 <script>
-import Header from "@/components/Header.vue";
+// import Header from "@/components/Header.vue";
+import Loader from "@/components/Loading.vue";
+import firebase from "firebase";
 
 export default {
   data: () => {
     return {
+      isLoading: false,
       name: "",
       intakePrice: "",
       sellingPrice: "",
@@ -91,7 +99,8 @@ export default {
     };
   },
   components: {
-    Header,
+    // Header,
+    Loader,
   },
   computed: {
     getEditProduct() {
@@ -99,8 +108,7 @@ export default {
     },
     calculateProfit() {
       return `RM${(
-        parseFloat(this.getEditProduct.sellingPrice) -
-        parseFloat(this.getEditProduct.intakePrice)
+        parseFloat(this.sellingPrice) - parseFloat(this.intakePrice)
       ).toFixed(2)}`;
     },
   },
@@ -108,13 +116,51 @@ export default {
     closeDialog() {
       this.$router.go(-1);
     },
+    updateProduct() {
+      this.isLoading = true;
+      const db = firebase.firestore();
+      db.collection("products")
+        .doc(this.getEditProduct.id)
+        .update({
+          name: this.name,
+          intakePrice: this.intakePrice,
+          sellingPrice: this.sellingPrice,
+        })
+        .then(() => {
+          console.log("Successfully updated the product");
+          this.isLoading = false;
+          this.$router.replace({ name: "home" });
+        })
+        .catch((error) => {
+          this.isLoading = false;
+          console.log("Error updating the product", error);
+        });
+    },
     confirmRemoveProduct() {
+      this.isLoading = true;
+      const db = firebase.firestore();
+
+      db.collection("products")
+        .doc(this.getEditProduct.id)
+        .delete()
+        .then(() => {
+          console.log("Successfully deleted the product");
+          this.isLoading = false;
+          this.$router.replace({ name: "home" });
+        })
+        .catch((error) => {
+          this.isLoading = false;
+          console.log("Error deleting the product", error);
+        });
       this.showConfirmationPrompt = false;
-      console.log("Confirm remove the product");
     },
     formatPrice(amount) {
       return `RM ${parseFloat(amount).toFixed(2)}`;
     },
+  },
+  created() {
+    this.intakePrice = this.getEditProduct.intakePrice;
+    this.sellingPrice = this.getEditProduct.sellingPrice;
   },
 };
 </script>
@@ -173,8 +219,7 @@ export default {
 }
 
 .edit-product-picture {
-  height: 250px;
-  width: auto;
+  max-width: 70%;
 }
 
 .edit-product-info {
@@ -185,9 +230,9 @@ export default {
   width: 100%;
   margin: 2rem 0rem;
   border-radius: 1rem;
-  box-shadow: 5px 5px 5px 5px var(--accent);
   padding: 2rem;
-  border: 0.5px solid var(--accent);
+  border: 1px solid var(--accent);
+  background: white;
 }
 
 .edit-product-price-field,
@@ -265,6 +310,10 @@ export default {
   .edit-product-info {
     width: 80%;
     background: white;
+  }
+
+  .edit-product-picture {
+    height: 500px;
   }
 }
 @media only screen and (min-width: 768px) {

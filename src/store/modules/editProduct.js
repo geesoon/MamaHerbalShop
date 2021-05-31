@@ -1,6 +1,7 @@
 const state = {
+  id: "",
   name: "",
-  productPic: "",
+  picture: "",
   intakePrice: "",
   sellingPrice: "",
 };
@@ -14,9 +15,10 @@ const getters = {
 const mutations = {
   setEditProduct(state, product) {
     state.name = product.name;
-    state.productPic = product.productPic;
+    state.picture = product.picture;
     state.intakePrice = product.intakePrice;
     state.sellingPrice = product.sellingPrice;
+    state.id = product.id;
   },
 };
 

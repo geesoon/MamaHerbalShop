@@ -3,12 +3,12 @@
     <div class="top-background-block"></div>
     <div class="title-bar">
       <div class="title">
-        <router-link to="home"><h2>Mama's Herbal</h2></router-link>
+        <router-link to="home"><h3>Mama's Herbal</h3></router-link>
       </div>
-      <div class="nav-bar">
+      <!-- <div class="nav-bar">
         <h5><router-link to="home">Catalogue</router-link></h5>
         <h5>Order</h5>
-      </div>
+      </div> -->
     </div>
   </section>
 </template>
@@ -20,6 +20,7 @@ export default {};
 <style>
 .header-bar {
   width: 90%;
+  margin: 1rem 0rem;
 }
 
 .header-bar > * {
@@ -29,7 +30,7 @@ export default {};
 .top-background-block {
   width: 100%;
   background: #0099ff;
-  height: 40vh;
+  height: 30vh;
   position: absolute;
   top: 0;
   left: 0;
@@ -64,7 +65,7 @@ export default {};
   }
 
   .top-background-block {
-    height: 30vh;
+    height: 20vh;
   }
 
   .nav-bar {

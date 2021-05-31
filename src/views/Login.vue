@@ -12,7 +12,7 @@
           v-model="username"
         />
         <input
-          type="text"
+          type="password"
           placeholder="password"
           class="login-input"
           v-model="password"
@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import firebase from "firebase";
+
 export default {
   data: () => {
     return {
@@ -33,7 +35,15 @@ export default {
   },
   methods: {
     login() {
-      this.$router.replace({ name: "home" });
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(this.username, this.password)
+        .then(() => {
+          this.$router.replace({ name: "home" });
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
     },
   },
 };

@@ -1,6 +1,11 @@
 <template>
   <div class="card-container">
-    <div class="product-picture"></div>
+    <img
+      :src="productInfo.picture"
+      v-if="productInfo.picture != ''"
+      class="product-picture"
+    />
+    <img src="../assets/no-image.svg" v-else class="product-picture" />
     <div class="product-info">
       <div class="product-name">
         <h4>{{ productInfo.name }}</h4>
@@ -26,7 +31,7 @@ export default {
       name: String,
       intakePrice: String,
       sellingPrice: String,
-      productPic: String,
+      picture: String,
     },
   },
   methods: {
@@ -83,6 +88,7 @@ export default {
   width: 100%;
   background: white;
   border-radius: 2rem;
+  object-fit: cover;
 }
 
 .product-info {
@@ -99,7 +105,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   width: 50%;
 }
 

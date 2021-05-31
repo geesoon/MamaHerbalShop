@@ -21,7 +21,7 @@
       <label for="edit-product-name-field">Product Name</label>
       <input
         type="text"
-        placeholder="product name"
+        placeholder="Product name"
         v-model="name"
         class="edit-product-name-field"
       />
@@ -30,7 +30,7 @@
         <input
           id="edit-product-intake-price"
           type="number"
-          placeholder="intake price"
+          placeholder="Intake price"
           v-model="intakePrice"
           class="edit-product-price-field"
         />
@@ -40,7 +40,7 @@
       <div class="edit-product-price">
         <input
           type="number"
-          placeholder="selling price"
+          placeholder="Selling price"
           v-model="sellingPrice"
           class="edit-product-price-field"
           id="edit-product-selling-price"
@@ -52,7 +52,7 @@
       </div>
     </section>
 
-    <button class="add-save-btn"><h5>Save</h5></button>
+    <button class="add-save-btn" @click="addProduct()"><h5>Save</h5></button>
     <button class="add-discard-btn" @click="closeDialog()">
       <h5>Discard</h5>
     </button>
@@ -68,15 +68,19 @@
         d="M0,192L48,202.7C96,213,192,235,288,245.3C384,256,480,256,576,240C672,224,768,192,864,160C960,128,1056,96,1152,69.3C1248,43,1344,21,1392,10.7L1440,0L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
       ></path>
     </svg>
+    <Loader v-if="isLoading" />
   </div>
 </template>
 
 <script>
 import Header from "@/components/Header.vue";
+import firebase from "firebase";
+import Loader from "@/components/Loading.vue";
 
 export default {
   data: () => {
     return {
+      isLoading: false,
       name: "",
       intakePrice: "",
       sellingPrice: "",
@@ -84,6 +88,7 @@ export default {
     };
   },
   components: {
+    Loader,
     Header,
   },
   computed: {
@@ -116,6 +121,48 @@ export default {
     },
     removeImage() {
       this.image = "";
+    },
+    validateForm() {
+      var number = /^[0-9]+$/;
+      if (
+        this.name == "" ||
+        this.sellingPrice == "" ||
+        this.intakePrice == ""
+      ) {
+        return false;
+      } else if (
+        this.sellingPrice.match(number) ||
+        this.intakePrice.match(number)
+      ) {
+        return true;
+      }
+    },
+    addProduct() {
+      if (this.validateForm()) {
+        alert(this.image);
+        this.isLoading = true;
+        const db = firebase.firestore();
+        db.collection("products")
+          .add({
+            picture: this.image,
+            name: this.name,
+            intakePrice: this.intakePrice,
+            sellingPrice: this.sellingPrice,
+          })
+          .then(() => {
+            console.log("Document successfully written products");
+            this.isLoading = false;
+            this.$router.replace({ name: "home" });
+          })
+          .catch((err) => {
+            alert("Fail to write to collection - products", err);
+            this.isLoading = false;
+          });
+      } else {
+        alert(
+          "1. Only accept numbers for intake or selling price. 2. Product name cannot be empty."
+        );
+      }
     },
   },
 };

@@ -26,8 +26,12 @@
       />
     </section>
 
-    <section v-if="search == '' && products.length == 0">
-      <h4>Add Product To Show Here!</h4>
+    <section v-if="search == '' && products.length == 0 && isLoading == false">
+      <div class="add-product-prompt">
+        <h5>No products</h5>
+        <br />
+        <h6>Start Adding Now!</h6>
+      </div>
     </section>
 
     <!-- Search Result list -->
@@ -56,6 +60,7 @@
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1440 320"
       class="base-wave"
+      v-if="products.length != 0"
     >
       <path
         fill="#0099ff"
@@ -63,38 +68,21 @@
         d="M0,64L34.3,106.7C68.6,149,137,235,206,234.7C274.3,235,343,149,411,133.3C480,117,549,171,617,208C685.7,245,754,267,823,277.3C891.4,288,960,288,1029,245.3C1097.1,203,1166,117,1234,74.7C1302.9,32,1371,32,1406,32L1440,32L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"
       ></path>
     </svg>
+    <Loader v-if="isLoading" />
   </div>
 </template>
 
 <script>
 import Header from "@/components/Header.vue";
+import Loader from "@/components/Loading.vue";
 import ProductCard from "@/components/ProductCard.vue";
+import firebase from "firebase";
 
 export default {
   data: () => {
     return {
-      products: [
-        { name: "黑米", intakePrice: "10", sellingPrice: "18", productPic: "" },
-        { name: "黑枣", intakePrice: "10", sellingPrice: "18", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        { name: "红枣", intakePrice: "20", sellingPrice: "30", productPic: "" },
-        {
-          name: "当归",
-          intakePrice: "180",
-          sellingPrice: "210",
-          productPic: "",
-        },
-      ],
+      isLoading: false,
+      products: [],
       showEditProductDialog: false,
       showAddProductDialog: false,
       search: "",
@@ -104,18 +92,19 @@ export default {
   components: {
     ProductCard,
     Header,
+    Loader,
   },
   watch: {
     search: function () {
       this.searchResult = this.products.filter((product) => {
-        return product.name.includes(this.search);
+        return product.name.toLowerCase().includes(this.search.toLowerCase());
       });
     },
   },
   methods: {
     filterProduct() {
       this.searchResult = this.products.filter((product) => {
-        return product.name.includes(this.search);
+        return product.name.toLowerCase().includes(this.search.toLowerCase());
       });
     },
     showEditProduct(product) {
@@ -126,11 +115,44 @@ export default {
       document.getElementById("add-fab").style.display = "none";
       this.$router.push({ name: "addProduct" });
     },
+    getProducts() {
+      const db = firebase.firestore();
+      db.collection("products")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            this.products.push({
+              name: doc.data().name,
+              intakePrice: doc.data().intakePrice,
+              sellingPrice: doc.data().sellingPrice,
+              picture: doc.data().picture,
+              id: doc.id,
+            });
+          });
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          this.isLoading = false;
+          console.log("Error getting products collection", error);
+        });
+    },
+  },
+  created() {
+    this.isLoading = true;
+    this.getProducts();
   },
 };
 </script>
 
 <style>
+.add-product-prompt {
+  text-align: center;
+  padding: 1rem;
+  background: var(--accent);
+  border-radius: 1rem;
+  border: 1px solid var(--accent);
+}
+
 .base-wave {
   position: fixed;
   bottom: 0;
@@ -166,7 +188,7 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  width: 90%;
+  width: 100%;
   margin: 0rem 0rem 2rem 0rem;
 }
 
@@ -179,10 +201,9 @@ export default {
 }
 
 .search-field {
-  padding: 0.8rem;
-  flex: 1;
+  width: 100%;
+  padding: 0.5rem;
   margin-right: 0.5rem;
-  box-shadow: 2px 2px 2px 2px var(--accent);
   border: none;
   color: var(--primary);
   font-size: 1.3rem;
@@ -254,7 +275,7 @@ export default {
   }
 
   .search-container {
-    width: 20%;
+    width: 30%;
   }
 }
 
