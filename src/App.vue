@@ -1,14 +1,5 @@
 <template>
   <div id="app">
-    <div class="nav-container">
-      <div class="nav-bar">
-        <div class="title"><h2>Mama's Herbal</h2></div>
-        <div>
-          <h5>Catalogue</h5>
-          <h5>Order</h5>
-        </div>
-      </div>
-    </div>
     <router-view />
   </div>
 </template>
@@ -26,22 +17,6 @@ export default {};
   --icon-small: 24px;
   --icon-medium: 48px;
   --icon-large: 64px;
-}
-
-.nav-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.nav-bar {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 2rem 0rem;
-  width: 85%;
 }
 
 /* Chrome, Safari, Edge, Opera */

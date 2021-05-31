@@ -1,5 +1,6 @@
 <template>
   <div class="edit-product-container">
+    <Header />
     <img
       class="edit-product-picture"
       src="https://secure.ap-tescoassets.com/assets/MY/103/9555117007103/ShotType1_540x540.jpg"
@@ -78,6 +79,8 @@
 </template>
 
 <script>
+import Header from "@/components/Header.vue";
+
 export default {
   data: () => {
     return {
@@ -86,6 +89,9 @@ export default {
       sellingPrice: "",
       showConfirmationPrompt: false,
     };
+  },
+  components: {
+    Header,
   },
   computed: {
     getEditProduct() {

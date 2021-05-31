@@ -1,5 +1,6 @@
 <template>
   <div class="add-product-container">
+    <Header />
     <div class="image-upload" v-if="image == ''">
       <div class="image-upload-label">Upload an image<br />or take a photo</div>
       <input
@@ -71,6 +72,8 @@
 </template>
 
 <script>
+import Header from "@/components/Header.vue";
+
 export default {
   data: () => {
     return {
@@ -79,6 +82,9 @@ export default {
       sellingPrice: "",
       image: "",
     };
+  },
+  components: {
+    Header,
   },
   computed: {
     calculateProfit() {
@@ -135,7 +141,7 @@ export default {
 }
 
 .preview-image {
-  max-width: 80%;
+  max-width: 50%;
   border-radius: 1rem;
 }
 
@@ -168,7 +174,7 @@ export default {
 }
 
 .add-product-container {
-  margin: 0rem 1rem;
+  margin: 0rem 1rem 4rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

@@ -7,9 +7,11 @@
       </div>
       <div class="product-price">
         <div class="intake-price">
+          Intake:
           <h5>{{ this.formatCurrency(productInfo.intakePrice) }}</h5>
         </div>
         <div class="selling-price">
+          Selling:
           <h5>{{ this.formatCurrency(productInfo.sellingPrice) }}</h5>
         </div>
       </div>
@@ -69,7 +71,7 @@ export default {
 }
 
 .card-container:hover {
-  transform: scale(1.2, 1.2);
+  transform: scale(1.1, 1.1);
 }
 
 .card-container:hover::after {

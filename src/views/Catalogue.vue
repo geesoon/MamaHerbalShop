@@ -1,19 +1,21 @@
 <template>
   <div class="catalogue-container">
+    <Header />
     <div class="search-bar">
-      <input
-        type="text"
-        class="search-field"
-        placeholder="search"
-        v-model="search"
-      />
-      <div class="search-icon-container">
-        <span class="material-icons search-bar-icon" @click="filterProduct()">
-          search
-        </span>
+      <div class="search-container">
+        <input
+          type="text"
+          class="search-field"
+          placeholder="search"
+          v-model="search"
+        />
+        <div class="search-icon-container">
+          <span class="material-icons search-bar-icon" @click="filterProduct()">
+            search
+          </span>
+        </div>
       </div>
     </div>
-
     <!-- Product Card List -->
     <section class="product-list" v-if="search == '' && products.length != 0">
       <ProductCard
@@ -44,16 +46,12 @@
       <h4>No result</h4>
     </section>
 
-    <div
-      class="background-mask"
-      v-show="showEditProductDialog || showAddProductDialog"
-    ></div>
-
     <!-- Floating Add Product Button -->
     <button id="add-fab" @click="showAddProduct()">
       <span class="material-icons"> add </span>
     </button>
 
+    <!-- Base Wave -->
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1440 320"
@@ -69,6 +67,7 @@
 </template>
 
 <script>
+import Header from "@/components/Header.vue";
 import ProductCard from "@/components/ProductCard.vue";
 
 export default {
@@ -104,6 +103,7 @@ export default {
   },
   components: {
     ProductCard,
+    Header,
   },
   watch: {
     search: function () {
@@ -135,6 +135,7 @@ export default {
   position: fixed;
   bottom: 0;
   z-index: -1;
+  width: 100%;
 }
 
 #add-fab {
@@ -161,8 +162,15 @@ export default {
 }
 
 .search-bar {
-  flex: 1;
-  margin: 1rem 0rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  margin: 0rem 0rem 2rem 0rem;
+}
+
+.search-container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -242,7 +250,11 @@ export default {
   }
 
   .search-bar {
-    width: 90%;
+    justify-content: flex-end;
+  }
+
+  .search-container {
+    width: 20%;
   }
 }
 
@@ -254,11 +266,8 @@ export default {
     grid-gap: 1rem;
     grid-template-columns: repeat(3, 1fr);
   }
-
-  .search-bar {
-    width: 50%;
-  }
 }
+
 @media only screen and (min-width: 1440px) {
   /* For large desktop: */
   .product-list {
