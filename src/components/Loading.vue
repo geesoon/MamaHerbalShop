@@ -10,23 +10,31 @@
       <div></div>
       <div></div>
     </div>
+    <div>
+      {{ message }}
+    </div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  props: {
+    message: String,
+  },
+};
 </script>
 
 <style>
 .overlay {
-  position: fixed;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
   top: 0;
-  z-index: 4;
+  z-index: 1000;
   background: var(--accent);
   opacity: 0.8;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }

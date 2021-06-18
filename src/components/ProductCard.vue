@@ -13,11 +13,11 @@
       <div class="product-price">
         <div class="intake-price">
           Intake:
-          <h5>{{ this.formatCurrency(productInfo.intakePrice) }}</h5>
+          {{ this.formatCurrency(productInfo.intakePrice) }}
         </div>
         <div class="selling-price">
           Selling:
-          <h5>{{ this.formatCurrency(productInfo.sellingPrice) }}</h5>
+          {{ this.formatCurrency(productInfo.sellingPrice) }}
         </div>
       </div>
     </div>
@@ -50,8 +50,6 @@ export default {
   align-items: center;
   background: var(--primary);
   border-radius: 2rem;
-  width: 100%;
-  height: 40vh;
   margin: 1rem;
   -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
   transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -76,7 +74,7 @@ export default {
 }
 
 .card-container:hover {
-  transform: scale(1.1, 1.1);
+  transform: scale(1.05, 1.05);
 }
 
 .card-container:hover::after {
@@ -84,8 +82,8 @@ export default {
 }
 
 .product-picture {
-  height: 70%;
-  width: 100%;
+  height: 50%;
+  width: auto;
   background: white;
   border-radius: 2rem;
   object-fit: cover;

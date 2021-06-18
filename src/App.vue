@@ -17,6 +17,8 @@ export default {};
   --icon-small: 24px;
   --icon-medium: 48px;
   --icon-large: 64px;
+  --bg: #0f0326;
+  --bg-body: white;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -72,5 +74,16 @@ h6 {
 * {
   box-sizing: border-box;
   margin: 0;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+
+* {
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+  text-decoration: none;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 </style>

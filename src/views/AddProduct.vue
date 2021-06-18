@@ -1,6 +1,5 @@
 <template>
   <div class="add-product-container">
-    <Header />
     <div class="image-upload" v-if="image == ''">
       <div class="image-upload-label">Upload an image<br />or take a photo</div>
       <input
@@ -57,7 +56,7 @@
       <h5>Discard</h5>
     </button>
 
-    <svg
+    <!-- <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1440 320"
       class="base-wave"
@@ -67,15 +66,15 @@
         fill-opacity="1"
         d="M0,192L48,202.7C96,213,192,235,288,245.3C384,256,480,256,576,240C672,224,768,192,864,160C960,128,1056,96,1152,69.3C1248,43,1344,21,1392,10.7L1440,0L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
       ></path>
-    </svg>
-    <Loader v-if="isLoading" />
+    </svg> -->
+    <Loader v-if="isLoading" :message="message" />
   </div>
 </template>
 
 <script>
-import Header from "@/components/Header.vue";
 import firebase from "firebase";
 import Loader from "@/components/Loading.vue";
+// import imagemin from "imagemin";
 
 export default {
   data: () => {
@@ -85,11 +84,11 @@ export default {
       intakePrice: "",
       sellingPrice: "",
       image: "",
+      message: "",
     };
   },
   components: {
     Loader,
-    Header,
   },
   computed: {
     calculateProfit() {
@@ -137,9 +136,11 @@ export default {
         return true;
       }
     },
+    optimizeImage() {},
     addProduct() {
       if (this.validateForm()) {
-        alert(this.image);
+        this.optimizeImage();
+        this.message = "Adding Products...";
         this.isLoading = true;
         const db = firebase.firestore();
         db.collection("products")
@@ -152,7 +153,7 @@ export default {
           .then(() => {
             console.log("Document successfully written products");
             this.isLoading = false;
-            this.$router.replace({ name: "home" });
+            this.$router.replace({ name: "catalogue" });
           })
           .catch((err) => {
             alert("Fail to write to collection - products", err);
@@ -221,7 +222,6 @@ export default {
 }
 
 .add-product-container {
-  margin: 0rem 1rem 4rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

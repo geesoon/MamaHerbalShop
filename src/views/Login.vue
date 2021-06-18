@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import firebase from "firebase";
+import Auth from "@/apis/auth.js";
 
 export default {
   data: () => {
@@ -34,16 +34,13 @@ export default {
     };
   },
   methods: {
-    login() {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(this.username, this.password)
-        .then(() => {
-          this.$router.replace({ name: "home" });
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
+    async login() {
+      let res = await Auth.login(this.username, this.password);
+      if (res.valid) {
+        this.$router.replace({ name: "catalogue" });
+      } else {
+        alert(res.res);
+      }
     },
   },
 };
