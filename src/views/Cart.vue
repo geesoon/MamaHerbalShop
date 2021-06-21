@@ -1,5 +1,5 @@
 <template>
-  <div class="cart-container" v-if="!isLoading">
+  <div class="cart-container" v-if="!isLoading && this.items.length != 0">
     <div class="cart-item-list">
       <CartItem v-for="(item, key) in items" :item="item" :key="key" />
     </div>
@@ -46,6 +46,22 @@
       </button>
     </div>
   </div>
+  <div class="no-item-cart-container" v-else>
+    <div class="no-items-image-container">
+      <img src="../assets/empty_cart.svg" alt="empty cart" />
+      <span>There are no items in the cart.</span>
+    </div>
+    <div>
+      <button class="primary-btn">
+        <router-link to="/dashboard/product">Continue Adding</router-link>
+      </button>
+    </div>
+    <div>
+      <button class="outline-btn">
+        <router-link to="/dashboard/history">View Order History</router-link>
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -78,7 +94,13 @@ export default {
         this.$store.commit("setIsLoading", true);
         this.items = await Product.getProductsByIds(cart);
         this.$store.commit("setIsLoading", false);
+      } else {
+        this.resetItems();
       }
+    },
+    resetItems() {
+      this.items = [];
+      this.soldTo = "";
     },
     totalCost() {
       let acc = 0;
@@ -112,6 +134,8 @@ export default {
         totalProfit: this.totalProfit(),
       });
       if (res.valid) {
+        this.$store.commit("clearCart");
+        this.getItems();
         alert("order checkout successfully");
       } else {
         alert("order checkout fail");
@@ -125,6 +149,30 @@ export default {
 </script>
 
 <style>
+/* Cart without items */
+.no-item-cart-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+.no-items-image-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-items-image-container > img {
+  width: 40%;
+  height: auto;
+}
+
+/* Cart with items */
 .cart-container {
   display: flex;
   justify-content: center;
@@ -176,6 +224,10 @@ export default {
 }
 
 @media only screen and (min-width: 600px) {
+  .no-items-image-container > img {
+    width: 15%;
+  }
+
   .cart-panel {
     left: calc(280px + 1rem);
     width: calc(100% - 280px - 1rem);

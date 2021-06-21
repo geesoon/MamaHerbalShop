@@ -17,8 +17,8 @@
     <!-- No Products -->
     <div v-else-if="products.length == 0 && isLoading == false && search == ''">
       <div class="add-product-prompt">
-        <h5>No products</h5>
-        <br />
+        <img src="../assets/empty_catalogue.svg" alt="empty catalogue" />
+        <h6>No products!</h6>
         <h6>Start Adding Now!</h6>
       </div>
     </div>
@@ -80,6 +80,17 @@ export default {
 </script>
 
 <style>
+.add-product-prompt {
+  text-align: center;
+  width: 100%;
+  margin: 1rem;
+}
+
+.add-product-prompt > img {
+  width: 40%;
+  height: auto;
+}
+
 .catalogue-container {
   display: flex;
   flex-direction: column;
@@ -98,6 +109,12 @@ export default {
 
 @media only screen and (min-width: 600px) {
   /* For tablet: */
+
+  .add-product-prompt > img {
+    width: 15%;
+    height: auto;
+  }
+
   .product-list {
     display: grid;
     width: 95%;

@@ -1,20 +1,21 @@
 <template>
-  <div>
-    <div>History</div>
-    <div>
-      {{ history }}
-    </div>
+  <div class="history-list">
+    <HistoryItem v-for="(item, key) in history" :history="item" :key="key" />
   </div>
 </template>
 
 <script>
 import History from "@/apis/history.js";
+import HistoryItem from "@/components/HistoryItem.vue";
 
 export default {
   data() {
     return {
       history: "",
     };
+  },
+  components: {
+    HistoryItem,
   },
   methods: {
     async getHistory() {
@@ -35,4 +36,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.history-list {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+}
+</style>

@@ -63,13 +63,13 @@
       </button>
       <div class="confirmation-mask" v-if="showConfirmationPrompt"></div>
       <div class="confirmation-prompt" v-if="showConfirmationPrompt">
-        <h4>Confirm Remove This Product?</h4>
+        <h6>Confirm remove "{{ productInfo.name }}"?</h6>
         <div class="confirmation-btn-bar">
           <button class="primary-btn" @click="confirmRemoveProduct()">
-            <h5>Confirm</h5>
+            Confirm
           </button>
           <button class="danger-btn" @click="showConfirmationPrompt = false">
-            <h5>Cancel</h5>
+            Cancel
           </button>
         </div>
       </div>
@@ -291,14 +291,6 @@ export default {
 
 .remove-product-btn {
   margin: 1rem 0rem;
-}
-
-.add-product-prompt {
-  text-align: center;
-  padding: 1rem;
-  background: var(--accent);
-  border-radius: 1rem;
-  border: 1px solid var(--accent);
 }
 
 @media only screen and (min-width: 600px) {

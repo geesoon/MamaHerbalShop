@@ -83,6 +83,12 @@ h6 {
   width: 100%;
 }
 
+.primary-btn > *,
+.secondary-btn > *,
+.danger-btn > * {
+  color: white;
+}
+
 .secondary-btn {
   padding: 0.5rem;
   background: var(--secondary);
@@ -97,6 +103,15 @@ h6 {
   color: white;
   margin: 0.5rem 0rem;
   width: 100%;
+}
+
+.outline-btn {
+  padding: 0.5rem;
+  background: white;
+  color: var(--primary);
+  margin: 0.5rem 0rem;
+  border-radius: 2rem;
+  border: 1px solid var(--primary);
 }
 
 * {
