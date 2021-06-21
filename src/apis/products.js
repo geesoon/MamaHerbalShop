@@ -15,7 +15,40 @@ export default {
           id: doc.id,
         });
       });
-      return products;
+      return products.reverse();
+    } catch (err) {
+      return err;
+    }
+  },
+  async getProductsByIds(items) {
+    try {
+      const db = firebase.firestore();
+      let products = [];
+      let querySnapshot = await db.collection("products").get();
+      querySnapshot.forEach((doc) => {
+        products.push({
+          name: doc.data().name,
+          intakePrice: doc.data().intakePrice,
+          sellingPrice: doc.data().sellingPrice,
+          picture: doc.data().picture,
+          id: doc.id,
+        });
+      });
+
+      let cartProducts = [];
+      items.forEach((item) => {
+        let temp = products.filter((product) => {
+          return product.id == item.id;
+        });
+        cartProducts = [...cartProducts, ...temp];
+        cartProducts[cartProducts.length - 1].quantity = item.quantity;
+      });
+
+      cartProducts = cartProducts.sort((a, b) => {
+        return a.no - b.no;
+      });
+
+      return cartProducts;
     } catch (err) {
       return err;
     }
@@ -38,6 +71,7 @@ export default {
   },
   async updateProduct({ name, intakePrice, sellingPrice, id }) {
     try {
+      console.log(name);
       const db = firebase.firestore();
       await db.collection("products").doc(id).update({
         name: name,

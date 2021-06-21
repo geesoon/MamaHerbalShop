@@ -4,7 +4,6 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 1440 320"
     class="base-wave"
-    v-if="products.length != 0"
   >
     <path
       fill="#0099ff"
@@ -20,7 +19,7 @@ export default {};
 
 <style>
 .base-wave {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   z-index: -1;
   width: 100%;

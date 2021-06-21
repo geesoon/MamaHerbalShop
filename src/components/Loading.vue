@@ -26,13 +26,13 @@ export default {
 
 <style>
 .overlay {
-  position: absolute;
+  position: fixed;
   width: 100vw;
   height: 100vh;
   top: 0;
   z-index: 1000;
   background: var(--accent);
-  opacity: 0.8;
+  opacity: 0.9;
   display: flex;
   flex-direction: column;
   justify-content: center;

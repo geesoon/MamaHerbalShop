@@ -14,9 +14,9 @@ export default {};
   --secondary: #41453e;
   --accent: #e2e2e2;
   --danger: #ff3030;
-  --icon-small: 24px;
-  --icon-medium: 48px;
-  --icon-large: 64px;
+  --icon-small: 6px;
+  --icon-medium: 12px;
+  --icon-large: 24px;
   --bg: #0f0326;
   --bg-body: white;
 }
@@ -42,33 +42,65 @@ button:hover {
 }
 
 h1 {
-  font-size: 4rem;
-}
-
-h2 {
-  font-size: 3rem;
-}
-
-h3 {
   font-size: 2.5rem;
 }
 
-h4 {
+h2 {
   font-size: 2rem;
 }
 
-h5 {
+h3 {
+  font-size: 1.7rem;
+}
+
+h4 {
   font-size: 1.5rem;
 }
 
-h6 {
+h5 {
   font-size: 1.3rem;
+}
+
+h6 {
+  font-size: 1.1rem;
+}
+
+h7 {
+  font-size: 0.9rem;
 }
 
 #app {
   font-family: "Passion One", cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.material-icons {
+  cursor: pointer !important;
+}
+
+.primary-btn {
+  padding: 0.5rem;
+  background: var(--primary);
+  color: white;
+  margin: 0.5rem 0rem;
+  width: 100%;
+}
+
+.secondary-btn {
+  padding: 0.5rem;
+  background: var(--secondary);
+  color: white;
+  margin: 0.5rem 0rem;
+  width: 100%;
+}
+
+.danger-btn {
+  padding: 0.5rem;
+  background: var(--danger);
+  color: white;
+  margin: 0.5rem 0rem;
+  width: 100%;
 }
 
 * {

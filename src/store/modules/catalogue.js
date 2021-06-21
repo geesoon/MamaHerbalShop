@@ -1,6 +1,7 @@
 const state = {
   products: [],
   search: "",
+  isLoading: false,
 };
 
 const getters = {
@@ -9,6 +10,9 @@ const getters = {
   },
   getSearchInput: (state) => {
     return state.search;
+  },
+  getIsLoading: (state) => {
+    return state.isLoading;
   },
 };
 
@@ -19,6 +23,9 @@ const mutations = {
   },
   setSearchInput: (state, search) => {
     state.search = search;
+  },
+  setIsLoading: (state, isLoading) => {
+    state.isLoading = isLoading;
   },
 };
 

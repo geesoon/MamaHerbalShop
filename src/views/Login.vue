@@ -1,7 +1,5 @@
 <template>
   <div class="login-page">
-    <div class="large-view-background"></div>
-    <div class="login-background"></div>
     <section class="login-container">
       <div class="title"><h1>Mama's Herbal</h1></div>
       <div class="login-form">
@@ -35,12 +33,14 @@ export default {
   },
   methods: {
     async login() {
+      this.$store.commit("setIsLoading", true);
       let res = await Auth.login(this.username, this.password);
       if (res.valid) {
         this.$router.replace({ name: "catalogue" });
       } else {
         alert(res.res);
       }
+      this.$store.commit("setIsLoading", false);
     },
   },
 };
@@ -53,18 +53,8 @@ export default {
   background: #f3f5f7;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-}
-
-.login-background {
-  position: absolute;
-  bottom: 0;
-  background-image: url("../assets/teabag.jpg");
-  background-size: cover;
-  height: 80vh;
-  width: 100vw;
-  z-index: 1;
 }
 
 .login-container {
@@ -72,10 +62,6 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  z-index: 2;
-  position: relative;
-  width: 100%;
 }
 
 .title {
@@ -117,26 +103,9 @@ export default {
   color: white;
 }
 
-.large-view-background {
-  display: none;
-  background-image: url("../assets/chinese-medicine.jpg");
-  background-size: fill;
-  height: 100%;
-  width: 50%;
-}
-
 @media only screen and (min-width: 768px) {
-  /* For tablet: */
-  .large-view-background {
-    display: block;
-  }
-
-  .login-background {
-    background-image: none;
-  }
-
   .login-container {
-    width: 50%;
+    width: 30%;
   }
 
   .login-page {

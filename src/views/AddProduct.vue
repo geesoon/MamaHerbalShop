@@ -55,40 +55,21 @@
     <button class="add-discard-btn" @click="closeDialog()">
       <h5>Discard</h5>
     </button>
-
-    <!-- <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 1440 320"
-      class="base-wave"
-    >
-      <path
-        fill="#0099ff"
-        fill-opacity="1"
-        d="M0,192L48,202.7C96,213,192,235,288,245.3C384,256,480,256,576,240C672,224,768,192,864,160C960,128,1056,96,1152,69.3C1248,43,1344,21,1392,10.7L1440,0L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-      ></path>
-    </svg> -->
-    <Loader v-if="isLoading" :message="message" />
   </div>
 </template>
 
 <script>
 import firebase from "firebase";
-import Loader from "@/components/Loading.vue";
 // import imagemin from "imagemin";
 
 export default {
   data: () => {
     return {
-      isLoading: false,
       name: "",
       intakePrice: "",
       sellingPrice: "",
       image: "",
-      message: "",
     };
-  },
-  components: {
-    Loader,
   },
   computed: {
     calculateProfit() {
@@ -98,6 +79,9 @@ export default {
       return `RM${(
         parseFloat(this.sellingPrice) - parseFloat(this.intakePrice)
       ).toFixed(2)}`;
+    },
+    isLoading() {
+      return this.$store.getters.getIsLoading;
     },
   },
   methods: {
@@ -140,8 +124,8 @@ export default {
     addProduct() {
       if (this.validateForm()) {
         this.optimizeImage();
-        this.message = "Adding Products...";
-        this.isLoading = true;
+        this.$store.commit("setIsLoading", true);
+
         const db = firebase.firestore();
         db.collection("products")
           .add({
@@ -152,16 +136,16 @@ export default {
           })
           .then(() => {
             console.log("Document successfully written products");
-            this.isLoading = false;
+            this.$store.commit("setIsLoading", false);
             this.$router.replace({ name: "catalogue" });
           })
           .catch((err) => {
             alert("Fail to write to collection - products", err);
-            this.isLoading = false;
+            this.$store.commit("setIsLoading", false);
           });
       } else {
         alert(
-          "1. Only accept numbers for intake or selling price. 2. Product name cannot be empty."
+          "1. Only accept numbers for intake or selling price. \n2. Product name cannot be empty."
         );
       }
     },

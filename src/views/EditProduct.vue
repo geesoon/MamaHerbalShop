@@ -1,113 +1,104 @@
 <template>
   <div class="edit-product-container">
-    <!-- <Header /> -->
-    <img
-      v-if="productInfo.picture != ''"
-      class="edit-product-picture"
-      :src="productInfo.picture"
-      :alt="productInfo.name"
-    />
-    <img v-else src="../assets/no-image.svg" class="edit-product-picture" />
-    <section class="edit-product-info">
-      <label for="edit-product-name-field">Product Name</label>
-      <input
-        type="text"
-        :placeholder="productInfo.name"
-        v-model="input.name"
-        class="edit-product-name-field"
+    <section v-if="!isLoading">
+      <img
+        v-if="productInfo.picture != ''"
+        class="edit-product-picture"
+        :src="productInfo.picture"
+        :alt="productInfo.name"
       />
-      <label for="edit-product-intake-price">Intake Price</label>
-      <div class="edit-product-price">
-        <input
-          type="number"
-          :placeholder="formatPrice(productInfo.intakePrice)"
-          v-model="input.intakePrice"
-          class="edit-product-price-field"
-          id="edit-product-intake-price"
-        />
-        <h6 class="kg">/kg</h6>
-      </div>
-      <label for="edit-product-selling-price">Selling Price</label>
-      <div class="edit-product-price">
-        <input
-          type="number"
-          :placeholder="formatPrice(productInfo.sellingPrice)"
-          v-model="input.sellingPrice"
-          class="edit-product-price-field"
-          id="edit-product-selling-price"
-        />
-        <h6 class="kg">/kg</h6>
-      </div>
-      <div class="profit">
-        <h5>Profit: {{ calculateProfit }}</h5>
+      <img v-else src="../assets/no-image.svg" class="edit-product-picture" />
+      <section class="edit-product-info">
+        <div class="edit-product-info-row">
+          <h7>Product Name</h7>
+          <div class="edit-product-name">
+            <input
+              type="text"
+              :placeholder="productInfo.name"
+              v-model="productInfo.name"
+              class="edit-product-name-field"
+            />
+          </div>
+        </div>
+
+        <div class="edit-product-info-row">
+          <h7>Intake Price</h7>
+          <div class="edit-product-price">
+            <div>RM</div>
+            <input
+              type="number"
+              :placeholder="formatPrice(productInfo.intakePrice)"
+              v-model="productInfo.intakePrice"
+              class="edit-product-price-field"
+            />
+            <small>/kg</small>
+          </div>
+        </div>
+
+        <div class="edit-product-info-row">
+          <h7>Selling Price</h7>
+          <div class="edit-product-price">
+            <div>RM</div>
+            <input
+              type="number"
+              :placeholder="formatPrice(productInfo.sellingPrice)"
+              v-model="productInfo.sellingPrice"
+              class="edit-product-price-field"
+            />
+            <small>/kg</small>
+          </div>
+        </div>
+
+        <div class="edit-product-info-row">
+          <h7>Profit:</h7>
+          <div class="profit">
+            {{ calculateProfit }}
+          </div>
+        </div>
+      </section>
+      <button class="primary-btn" @click="updateProduct()">Save</button>
+      <button class="danger-btn" @click="closeDialog()">Discard</button>
+      <button class="remove-product-btn" @click="showConfirmationPrompt = true">
+        <span class="material-icons"> delete </span>
+      </button>
+      <div class="confirmation-mask" v-if="showConfirmationPrompt"></div>
+      <div class="confirmation-prompt" v-if="showConfirmationPrompt">
+        <h4>Confirm Remove This Product?</h4>
+        <div class="confirmation-btn-bar">
+          <button class="confirm-remove-btn" @click="confirmRemoveProduct()">
+            <h5>Confirm</h5>
+          </button>
+          <button
+            class="cancel-remove-btn"
+            @click="showConfirmationPrompt = false"
+          >
+            <h5>Cancel</h5>
+          </button>
+        </div>
       </div>
     </section>
-    <button class="edit-save-btn" @click="updateProduct()">
-      <h5>Save</h5>
-    </button>
-    <button class="edit-discard-btn" @click="closeDialog()">
-      <h5>Discard</h5>
-    </button>
-    <button class="remove-product-btn" @click="showConfirmationPrompt = true">
-      <span class="material-icons"> delete </span>
-    </button>
-
-    <div class="confirmation-mask" v-if="showConfirmationPrompt"></div>
-    <div class="confirmation-prompt" v-if="showConfirmationPrompt">
-      <h4>Confirm Remove This Product?</h4>
-      <div class="confirmation-btn-bar">
-        <button class="confirm-remove-btn" @click="confirmRemoveProduct()">
-          <h5>Confirm</h5>
-        </button>
-        <button
-          class="cancel-remove-btn"
-          @click="showConfirmationPrompt = false"
-        >
-          <h5>Cancel</h5>
-        </button>
-      </div>
-    </div>
-
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 1440 320"
-      class="base-wave"
-    >
-      <path
-        fill="#0099ff"
-        fill-opacity="1"
-        d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-      ></path>
-    </svg>
-    <Loader v-if="isLoading" />
   </div>
 </template>
 
 <script>
-import Loader from "@/components/Loading.vue";
 import Product from "@/apis/products.js";
 
 export default {
   data: () => {
     return {
-      isLoading: true,
-      input: {
-        name: "",
-        intakePrice: "",
-        sellingPrice: "",
-      },
       showConfirmationPrompt: false,
       productInfo: "",
     };
   },
-  components: {
-    Loader,
-  },
   computed: {
     calculateProfit() {
       return `RM${(
-        parseFloat(this.sellingPrice) - parseFloat(this.intakePrice)
+        parseFloat(this.productInfo.sellingPrice) -
+        parseFloat(this.productInfo.intakePrice)
       ).toFixed(2)}`;
+    },
+    isLoading() {
+      return this.$store.getters.getIsLoading;
     },
   },
   methods: {
@@ -118,23 +109,30 @@ export default {
       return `RM ${parseFloat(amount).toFixed(2)}`;
     },
     async updateProduct() {
-      this.isLoading = true;
-      await Product.updateProduct(this.input);
-      console.log("Successfully updated the product");
-      this.isLoading = false;
-      this.$router.replace({ name: "catalogue" });
+      this.$store.commit("setIsLoading", true);
+      let res = await Product.updateProduct(this.productInfo);
+      if (res == null) {
+        console.log("Successfully updated the product");
+        this.$store.commit("setIsLoading", false);
+        this.$router.replace({ name: "catalogue" });
+      } else {
+        this.$store.commit("setIsLoading", false);
+        alert(res.message);
+      }
     },
     async confirmRemoveProduct() {
-      this.isLoading = true;
+      this.$store.commit("setIsLoading", true);
       await Product.removeProductById(this.productInfo.id);
       console.log("Successfully deleted the product");
-      this.isLoading = false;
+      this.$store.commit("setIsLoading", false);
       this.showConfirmationPrompt = false;
       this.$router.replace({ name: "catalogue" });
     },
     async getProductInfo(id) {
+      this.$store.commit("setIsLoading", true);
       this.productInfo = await Product.getProductById(id);
-      this.isLoading = false;
+      console.log(this.productInfo);
+      this.$store.commit("setIsLoading", false);
     },
   },
   created() {
@@ -143,4 +141,157 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.background-mask {
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 0.8;
+  position: fixed;
+}
+
+.confirmation-mask {
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 0.8;
+  z-index: 3;
+  position: fixed;
+}
+
+.confirmation-prompt {
+  position: fixed;
+  top: 30%;
+  width: 90%;
+  background: white;
+  border: 2px solid var(--primary);
+  z-index: 4;
+  padding: 1rem;
+}
+
+.confirmation-btn-bar {
+  margin: 1rem 0rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.confirm-remove-btn {
+  background: var(--danger);
+}
+
+.cancel-remove-btn {
+  background: var(--primary);
+}
+
+.confirm-remove-btn,
+.cancel-remove-btn {
+  color: white;
+  border-radius: 1rem;
+  width: 50%;
+  padding: 1rem;
+  margin: 1rem 0rem;
+}
+
+.edit-product-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  width: 100%;
+}
+
+.edit-product-picture {
+  max-width: 80%;
+  height: auto;
+  margin: 1rem;
+}
+
+.edit-product-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.edit-product-info-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 0.3rem 0rem;
+}
+
+.edit-product-info-row > h7 {
+  width: 50%;
+}
+
+.edit-product-name,
+.profit,
+.edit-product-price {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.edit-product-price-field,
+.edit-product-name-field {
+  border: 1px solid var(--primary);
+  padding: 0.5rem;
+  color: var(--primary);
+  font-weight: bold;
+  width: 90%;
+}
+
+.edit-product-price-field::placeholder,
+.edit-product-price-field::-moz-placeholder,
+.edit-product-price-field::-ms-placeholder,
+.edit-product-name-field::placeholder,
+.edit-product-name-field::-moz-placeholder,
+.edit-product-name-field::-ms-placeholder {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.edit-save-btn,
+.edit-discard-btn {
+  color: white;
+  margin: 0.5rem 0rem;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.remove-product-btn {
+  border-radius: 100%;
+  background: var(--accent);
+  padding: 1rem;
+}
+
+.edit-save-btn,
+.add-save-btn {
+  background: var(--primary);
+}
+
+.edit-discard-btn,
+.add-discard-btn {
+  background: var(--danger);
+}
+
+.remove-product-btn {
+  margin: 1rem 0rem;
+}
+
+.add-product-prompt {
+  text-align: center;
+  padding: 1rem;
+  background: var(--accent);
+  border-radius: 1rem;
+  border: 1px solid var(--accent);
+}
+</style>

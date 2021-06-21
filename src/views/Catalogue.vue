@@ -1,12 +1,16 @@
 <template>
   <div class="catalogue-container">
+    <div v-if="search != '' && products.length != 0">
+      Search result for : {{ search }}
+    </div>
+
     <!-- Product Card List -->
     <div class="product-list" v-if="products.length != 0">
       <ProductCard
         :productInfo="product"
         v-for="(product, key) in products"
         :key="key"
-        @click.native="showEditProduct(product)"
+        @click.native="showViewProduct(product)"
       />
     </div>
 
@@ -23,7 +27,6 @@
     <div v-else-if="isLoading == false">
       <h4>No result for: {{ search }}</h4>
     </div>
-    <Loader v-if="isLoading" />
     <!-- Floating Add Product Button -->
     <button id="add-fab" @click="showAddProduct()">
       <span class="material-icons"> add </span>
@@ -33,18 +36,11 @@
 
 <script>
 import ProductCard from "@/components/ProductCard.vue";
-import Loader from "@/components/Loading.vue";
 import Product from "@/apis/products.js";
 
 export default {
-  data: () => {
-    return {
-      isLoading: true,
-    };
-  },
   components: {
     ProductCard,
-    Loader,
   },
   computed: {
     products() {
@@ -55,13 +51,16 @@ export default {
     search() {
       return this.$store.getters.getSearchInput;
     },
+    isLoading() {
+      return this.$store.getters.getIsLoading;
+    },
   },
   methods: {
     updateSearch(search) {
       this.search = search;
     },
-    showEditProduct(product) {
-      this.$router.push({ name: "editProduct", query: { id: product.id } });
+    showViewProduct(product) {
+      this.$router.push({ name: "viewProduct", query: { id: product.id } });
     },
     showAddProduct() {
       document.getElementById("add-fab").style.display = "none";
@@ -70,10 +69,11 @@ export default {
     async getProducts() {
       let products = await Product.getProducts();
       this.$store.commit("setProducts", products);
-      this.isLoading = false;
+      this.$store.commit("setIsLoading", false);
     },
   },
   created() {
+    this.$store.commit("setIsLoading", true);
     this.getProducts();
   },
 };
@@ -120,17 +120,7 @@ export default {
     display: grid;
     width: 100%;
     grid-gap: 1rem;
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media only screen and (min-width: 1440px) {
-  /* For large desktop: */
-  .product-list {
     grid-template-columns: repeat(4, 1fr);
-    grid-gap: 4rem;
-    margin: 2rem 0rem;
-    width: 90%;
   }
 }
 </style>

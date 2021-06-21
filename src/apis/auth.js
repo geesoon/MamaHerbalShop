@@ -11,4 +11,12 @@ export default {
       return { valid: false, res: err };
     }
   },
+  async logout() {
+    try {
+      await firebase.auth().signOut();
+      return { valid: true };
+    } catch (err) {
+      return { valid: false, res: err };
+    }
+  },
 };

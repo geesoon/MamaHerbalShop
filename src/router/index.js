@@ -15,7 +15,7 @@ const routes = [
     },
     children: [
       {
-        path: "main",
+        path: "product",
         name: "catalogue",
         component: () => import("../views/Catalogue.vue"),
         meta: {
@@ -23,7 +23,15 @@ const routes = [
         },
       },
       {
-        path: "editProduct",
+        path: "view",
+        name: "viewProduct",
+        component: () => import("../views/ViewProduct.vue"),
+        meta: {
+          authRequired: true,
+        },
+      },
+      {
+        path: "edit",
         name: "editProduct",
         component: () => import("../views/EditProduct.vue"),
         meta: {
