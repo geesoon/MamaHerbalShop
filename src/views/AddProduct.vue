@@ -1,66 +1,69 @@
 <template>
   <div class="add-product-container">
-    <div class="image-upload" v-if="image == ''">
-      <div class="image-upload-label">Upload an image<br />or take a photo</div>
-      <input
-        type="file"
-        id="product-image-upload"
-        name="img"
-        accept="image/*"
-        @change="onFileChange"
-      />
-    </div>
-    <div v-else class="preview-image-container">
-      <img :src="image" class="preview-image" />
-      <button @click="removeImage" class="remove-image-btn">
-        <span class="material-icons"> highlight_off </span>
+    <section>
+      <div class="image-upload" v-if="image == ''">
+        <div class="image-upload-label">
+          Upload an image<br />or take a photo
+        </div>
+        <input
+          type="file"
+          id="product-image-upload"
+          name="img"
+          accept="image/*"
+          @change="onFileChange"
+        />
+      </div>
+      <div v-else class="preview-image-container">
+        <img :src="image" class="preview-image" />
+        <button @click="removeImage" class="remove-image-btn">
+          <span class="material-icons"> highlight_off </span>
+        </button>
+      </div>
+      <section class="edit-product-info">
+        <label for="edit-product-name-field">Product Name</label>
+        <input
+          type="text"
+          placeholder="Product name"
+          v-model="name"
+          class="edit-product-name-field"
+        />
+        <label for="edit-product-intake-price">Intake Price</label>
+        <div class="edit-product-price">
+          <input
+            id="edit-product-intake-price"
+            type="number"
+            placeholder="Intake price"
+            v-model="intakePrice"
+            class="edit-product-price-field"
+          />
+          <h6 class="kg">/kg</h6>
+        </div>
+        <label for="edit-product-selling-price">Selling Price</label>
+        <div class="edit-product-price">
+          <input
+            type="number"
+            placeholder="Selling price"
+            v-model="sellingPrice"
+            class="edit-product-price-field"
+            id="edit-product-selling-price"
+          />
+          <h6 class="kg">/kg</h6>
+        </div>
+        <div class="profit">
+          <h5>Profit: {{ calculateProfit }}</h5>
+        </div>
+      </section>
+      <button class="primary-btn" @click="addProduct()"><h5>Save</h5></button>
+      <button class="danger-btn" @click="closeDialog()">
+        <h5>Discard</h5>
       </button>
-    </div>
-    <section class="edit-product-info">
-      <label for="edit-product-name-field">Product Name</label>
-      <input
-        type="text"
-        placeholder="Product name"
-        v-model="name"
-        class="edit-product-name-field"
-      />
-      <label for="edit-product-intake-price">Intake Price</label>
-      <div class="edit-product-price">
-        <input
-          id="edit-product-intake-price"
-          type="number"
-          placeholder="Intake price"
-          v-model="intakePrice"
-          class="edit-product-price-field"
-        />
-        <h6 class="kg">/kg</h6>
-      </div>
-      <label for="edit-product-selling-price">Selling Price</label>
-      <div class="edit-product-price">
-        <input
-          type="number"
-          placeholder="Selling price"
-          v-model="sellingPrice"
-          class="edit-product-price-field"
-          id="edit-product-selling-price"
-        />
-        <h6 class="kg">/kg</h6>
-      </div>
-      <div class="profit">
-        <h5>Profit: {{ calculateProfit }}</h5>
-      </div>
     </section>
-
-    <button class="add-save-btn" @click="addProduct()"><h5>Save</h5></button>
-    <button class="add-discard-btn" @click="closeDialog()">
-      <h5>Discard</h5>
-    </button>
   </div>
 </template>
 
 <script>
-import firebase from "firebase";
 // import imagemin from "imagemin";
+import Product from "@/apis/products.js";
 
 export default {
   data: () => {
@@ -121,28 +124,22 @@ export default {
       }
     },
     optimizeImage() {},
-    addProduct() {
+    async addProduct() {
       if (this.validateForm()) {
         this.optimizeImage();
         this.$store.commit("setIsLoading", true);
-
-        const db = firebase.firestore();
-        db.collection("products")
-          .add({
-            picture: this.image,
-            name: this.name,
-            intakePrice: this.intakePrice,
-            sellingPrice: this.sellingPrice,
-          })
-          .then(() => {
-            console.log("Document successfully written products");
-            this.$store.commit("setIsLoading", false);
-            this.$router.replace({ name: "catalogue" });
-          })
-          .catch((err) => {
-            alert("Fail to write to collection - products", err);
-            this.$store.commit("setIsLoading", false);
-          });
+        let res = await Product.addProduct({
+          picture: this.image,
+          name: this.name,
+          intakePrice: this.intakePrice,
+          sellingPrice: this.sellingPrice,
+        });
+        this.$store.commit("setIsLoading", false);
+        if (!res.valid) {
+          alert(res.res);
+        } else {
+          this.$router.replace({ name: "catalogue" });
+        }
       } else {
         alert(
           "1. Only accept numbers for intake or selling price. \n2. Product name cannot be empty."
@@ -182,7 +179,6 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   margin-top: 2rem;
 }
 
@@ -197,6 +193,7 @@ export default {
   align-items: center;
   border-radius: 1rem;
   text-align: center;
+  margin-bottom: 1rem;
 }
 
 #product-image-upload {
@@ -206,6 +203,14 @@ export default {
 }
 
 .add-product-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.add-product-container > section {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -224,10 +229,12 @@ export default {
 @media only screen and (min-width: 600px) {
   /* For tablet: */
   .image-upload-label,
-  .add-product-form-container,
-  .add-save-btn,
-  .add-discard-btn {
+  .add-product-form-container {
     width: 50%;
+  }
+
+  .add-product-container > section {
+    width: 60%;
   }
 }
 @media only screen and (min-width: 1440px) {

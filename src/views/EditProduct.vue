@@ -10,7 +10,7 @@
       <img v-else src="../assets/no-image.svg" class="edit-product-picture" />
       <section class="edit-product-info">
         <div class="edit-product-info-row">
-          <h7>Product Name</h7>
+          <h6>Product Name</h6>
           <div class="edit-product-name">
             <input
               type="text"
@@ -22,7 +22,7 @@
         </div>
 
         <div class="edit-product-info-row">
-          <h7>Intake Price</h7>
+          <h6>Intake Price</h6>
           <div class="edit-product-price">
             <div>RM</div>
             <input
@@ -36,7 +36,7 @@
         </div>
 
         <div class="edit-product-info-row">
-          <h7>Selling Price</h7>
+          <h6>Selling Price</h6>
           <div class="edit-product-price">
             <div>RM</div>
             <input
@@ -50,7 +50,7 @@
         </div>
 
         <div class="edit-product-info-row">
-          <h7>Profit:</h7>
+          <h6>Profit:</h6>
           <div class="profit">
             {{ calculateProfit }}
           </div>
@@ -65,13 +65,10 @@
       <div class="confirmation-prompt" v-if="showConfirmationPrompt">
         <h4>Confirm Remove This Product?</h4>
         <div class="confirmation-btn-bar">
-          <button class="confirm-remove-btn" @click="confirmRemoveProduct()">
+          <button class="primary-btn" @click="confirmRemoveProduct()">
             <h5>Confirm</h5>
           </button>
-          <button
-            class="cancel-remove-btn"
-            @click="showConfirmationPrompt = false"
-          >
+          <button class="danger-btn" @click="showConfirmationPrompt = false">
             <h5>Cancel</h5>
           </button>
         </div>
@@ -156,17 +153,18 @@ export default {
   height: 100%;
   background: white;
   opacity: 0.8;
-  z-index: 3;
+  z-index: 1000;
   position: fixed;
+  left: 0;
+  top: 0;
 }
 
 .confirmation-prompt {
   position: fixed;
-  top: 30%;
-  width: 90%;
+  top: 25%;
   background: white;
   border: 2px solid var(--primary);
-  z-index: 4;
+  z-index: 1001;
   padding: 1rem;
 }
 
@@ -204,6 +202,13 @@ export default {
   width: 100%;
 }
 
+.edit-product-container > section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .edit-product-picture {
   max-width: 80%;
   height: auto;
@@ -215,6 +220,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  width: 100%;
 }
 
 .edit-product-info-row {
@@ -293,5 +299,11 @@ export default {
   background: var(--accent);
   border-radius: 1rem;
   border: 1px solid var(--accent);
+}
+
+@media only screen and (min-width: 600px) {
+  .edit-product-container > section {
+    max-width: 60%;
+  }
 }
 </style>

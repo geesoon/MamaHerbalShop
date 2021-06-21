@@ -41,7 +41,10 @@ export default {
           return product.id == item.id;
         });
         cartProducts = [...cartProducts, ...temp];
+        console.log(item.quantity, cartProducts.length);
+
         cartProducts[cartProducts.length - 1].quantity = item.quantity;
+        console.log(cartProducts[cartProducts.length - 1].quantity);
       });
 
       cartProducts = cartProducts.sort((a, b) => {
@@ -82,12 +85,30 @@ export default {
       return err;
     }
   },
+  async addProduct(product) {
+    try {
+      const db = firebase.firestore();
+      let res = db.collection("products").add(product);
+      return { valid: true, res: res };
+    } catch (err) {
+      return { valid: false, res: err };
+    }
+  },
   async removeProductById(id) {
     try {
       const db = firebase.firestore();
       await db.collection("products").doc(id).delete();
     } catch (err) {
       return err;
+    }
+  },
+  async checkOutOrder(order) {
+    try {
+      const db = firebase.firestore();
+      let res = db.collection("orderHistory").add(order);
+      return { valid: true, res: res };
+    } catch (err) {
+      return { valid: false, res: err };
     }
   },
 };

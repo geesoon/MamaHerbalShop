@@ -6,14 +6,14 @@
         <div class="add-cart-product-pic">
           <img
             v-if="productInfo.picture != ''"
-            class="edit-product-picture"
+            class="cart-product-picture"
             :src="productInfo.picture"
             :alt="productInfo.name"
           />
           <img
             v-else
             src="../assets/no-image.svg"
-            class="edit-product-picture"
+            class="cart-product-picture"
           />
         </div>
         <div class="add-cart-product-prices">
@@ -39,7 +39,10 @@
         <div class="add-cart-selection-container">
           <div class="add-cart-selections">
             <small>Quantity:</small>
-            <input type="number" placeholder="1000" v-model="quantity" />
+            <div class="cart-quantity">
+              <input type="number" placeholder="1000" v-model="quantity" />
+              <span>g</span>
+            </div>
           </div>
           <div class="add-cart-selections">
             <small>Cost:</small>
@@ -122,6 +125,10 @@ export default {
   z-index: 3;
   padding: 1rem;
   transition: top 300ms;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .add-cart-dialog-mask {
@@ -135,17 +142,21 @@ export default {
   z-index: 2;
 }
 
+.cart-product-picture {
+  width: 100%;
+  height: auto;
+}
+
 .add-cart-dialog-header {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .add-cart-product-pic {
-  width: 100%;
-  height: auto;
-  flex: 1;
+  max-width: 30%;
+  margin-right: 0.5rem;
 }
 
 .add-cart-product-prices {
@@ -153,7 +164,17 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  flex: 1;
+  width: 100%;
+}
+
+.cart-quantity {
+  width: 30%;
+}
+
+.cart-quantity > input {
+  width: 80%;
+  margin-right: 0.5rem;
+  text-align: center;
 }
 
 .add-cart-selection-container > * {
@@ -165,6 +186,7 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
 .add-cart-dialog-action {
@@ -174,5 +196,11 @@ export default {
 
 .add-cart-dialog-action > button {
   width: 100%;
+}
+
+@media only screen and (min-width: 600px) {
+  .add-cart-dialog > div {
+    width: 60%;
+  }
 }
 </style>

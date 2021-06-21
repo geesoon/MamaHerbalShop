@@ -114,6 +114,13 @@ export default {
   width: 100%;
 }
 
+.view-product-container > section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .view-product-picture {
   max-width: 80%;
   height: auto;
@@ -129,5 +136,11 @@ export default {
   margin-bottom: 2rem;
   border-radius: 1rem;
   background: white;
+}
+
+@media only screen and (min-width: 600px) {
+  .view-product-container > section {
+    max-width: 60%;
+  }
 }
 </style>

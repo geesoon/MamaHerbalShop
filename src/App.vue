@@ -65,10 +65,6 @@ h6 {
   font-size: 1.1rem;
 }
 
-h7 {
-  font-size: 0.9rem;
-}
-
 #app {
   font-family: "Passion One", cursive;
   -webkit-font-smoothing: antialiased;

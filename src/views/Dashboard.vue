@@ -62,7 +62,7 @@
           v-model="search"
         />
       </div>
-      <div class="cart-container" @click="showCart()">
+      <div @click="showCart()">
         <div class="cart-status">{{ cartStatus }}</div>
         <span class="material-icons cart"> shopping_cart </span>
       </div>
@@ -153,6 +153,7 @@ export default {
   font-weight: bold;
   background: var(--accent);
   text-align: left;
+  width: 90%;
 }
 
 .search-icon-container {

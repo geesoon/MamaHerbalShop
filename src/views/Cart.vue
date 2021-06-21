@@ -32,12 +32,18 @@
           <div class="cart-panel-row">
             <small>Profits: </small>
             <small>
-              <strong>{{ totalProfit() }}</strong>
+              <strong>{{
+                totalProfit() > 0
+                  ? `+ RM ${totalProfit()}`
+                  : `- RM ${totalProfit()}`
+              }}</strong>
             </small>
           </div>
         </div>
       </div>
-      <button class="primary-btn">Check Out Order</button>
+      <button class="primary-btn" @click="checkOutOrder()">
+        Check Out Order
+      </button>
     </div>
   </div>
 </template>
@@ -94,7 +100,22 @@ export default {
     },
     totalProfit() {
       let profits = (this.totalPrice() - this.totalCost()).toFixed(2);
-      return profits > 0 ? `+ RM${profits}` : `- RM${profits}`;
+      return profits;
+    },
+    async checkOutOrder() {
+      let res = await Product.checkOutOrder({
+        items: this.items,
+        soldTo: this.soldTo,
+        date: this.formattedDate,
+        totalCost: this.totalCost(),
+        totalPrice: this.totalPrice(),
+        totalProfit: this.totalProfit(),
+      });
+      if (res.valid) {
+        alert("order checkout successfully");
+      } else {
+        alert("order checkout fail");
+      }
     },
   },
   created() {
@@ -104,10 +125,22 @@ export default {
 </script>
 
 <style>
+.cart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .cart-item-list {
   padding: 0rem 0.5rem;
-  max-height: 68vh;
+  max-height: 75vh;
   overflow-y: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.cart-item-list::-webkit-scrollbar {
+  display: none;
 }
 
 .cart-panel {
@@ -117,6 +150,7 @@ export default {
   left: 0px;
   width: 100%;
   padding: 1rem;
+  background: white;
 }
 
 .cart-panel-order-info {
@@ -139,5 +173,16 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+
+@media only screen and (min-width: 600px) {
+  .cart-panel {
+    left: calc(280px + 1rem);
+    width: calc(100% - 280px - 1rem);
+  }
+
+  .cart-item-list {
+    width: 70%;
+  }
 }
 </style>

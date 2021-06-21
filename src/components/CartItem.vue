@@ -69,8 +69,6 @@ export default {
   flex-direction: row;
   padding: 0.5rem;
   width: 100%;
-  box-shadow: 2px 2px 2px 2px var(--accent);
-  border-radius: 0.5rem;
   margin: 1rem 0rem;
 }
 

@@ -50,18 +50,7 @@ export default {
   align-items: center;
   background: var(--primary);
   border-radius: 1rem;
-  -webkit-transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
   margin: 1rem 0rem;
-}
-
-.card-container:hover {
-  /* transform: scale(1.05, 1.05); */
-  box-shadow: 2px 2px 2px 2px var(--primary);
-}
-
-.card-container:hover::after {
-  opacity: 1;
 }
 
 .product-picture {
