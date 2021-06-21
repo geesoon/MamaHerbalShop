@@ -1,18 +1,23 @@
 <template>
   <div class="card-container">
-    <div class="product-picture"></div>
+    <img
+      :src="productInfo.picture"
+      v-if="productInfo.picture != ''"
+      class="product-picture"
+    />
+    <img src="../assets/no-image.svg" v-else class="product-picture" />
     <div class="product-info">
       <div class="product-name">
         <h4>{{ productInfo.name }}</h4>
       </div>
       <div class="product-price">
         <div class="intake-price">
-          Intake:
-          <h5>{{ this.formatCurrency(productInfo.intakePrice) }}</h5>
+          Buy:
+          {{ this.formatCurrency(productInfo.intakePrice) }}
         </div>
         <div class="selling-price">
-          Selling:
-          <h5>{{ this.formatCurrency(productInfo.sellingPrice) }}</h5>
+          Sell:
+          {{ this.formatCurrency(productInfo.sellingPrice) }}
         </div>
       </div>
     </div>
@@ -26,7 +31,7 @@ export default {
       name: String,
       intakePrice: String,
       sellingPrice: String,
-      productPic: String,
+      picture: String,
     },
   },
   methods: {
@@ -41,48 +46,18 @@ export default {
 .card-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   background: var(--primary);
-  border-radius: 2rem;
-  width: 100%;
-  height: 40vh;
-  margin: 1rem;
-  -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-/* https://tobiasahlin.com/demo/animate-box-shadow/ */
-.card-container::after {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: var(--primary);
-  border-radius: 2rem;
-  width: 100%;
-  height: 20vh;
-  margin: 1rem;
-  opacity: 0;
-  position: absolute;
-  z-index: -1;
-  -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.card-container:hover {
-  transform: scale(1.1, 1.1);
-}
-
-.card-container:hover::after {
-  opacity: 1;
+  border-radius: 1rem;
+  margin: 1rem 0rem;
 }
 
 .product-picture {
-  height: 70%;
+  height: auto;
   width: 100%;
-  background: white;
-  border-radius: 2rem;
+  border-radius: 1rem;
+  object-fit: cover;
 }
 
 .product-info {
@@ -92,14 +67,15 @@ export default {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 0rem 1rem;
+  padding: 0.5rem;
+  margin: 0.5rem 0rem;
 }
 
 .product-price {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   width: 50%;
 }
 
@@ -113,14 +89,13 @@ export default {
 .selling-price {
   color: white;
   text-align: left;
+  font-size: 0.8rem;
 }
 
 @media only screen and (min-width: 1024px) {
   /* For tablet: */
   .card-container {
     width: 100%;
-    margin: 0;
-    height: 40vh;
   }
 }
 </style>
