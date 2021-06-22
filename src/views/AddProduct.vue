@@ -19,38 +19,44 @@
           <span class="material-icons"> highlight_off </span>
         </button>
       </div>
-      <section class="edit-product-info">
-        <label for="edit-product-name-field">Product Name</label>
-        <input
-          type="text"
-          placeholder="Product name"
-          v-model="name"
-          class="edit-product-name-field"
-        />
-        <label for="edit-product-intake-price">Intake Price</label>
-        <div class="edit-product-price">
-          <input
-            id="edit-product-intake-price"
-            type="number"
-            placeholder="Intake price"
-            v-model="intakePrice"
-            class="edit-product-price-field"
-          />
-          <h6 class="kg">/kg</h6>
+      <section class="add-product-info">
+        <div class="add-product-info-row">
+          <h6>Product Name</h6>
+          <div class="add-product-name">
+            <input type="text" v-model="name" class="add-product-name-field" />
+          </div>
         </div>
-        <label for="edit-product-selling-price">Selling Price</label>
-        <div class="edit-product-price">
-          <input
-            type="number"
-            placeholder="Selling price"
-            v-model="sellingPrice"
-            class="edit-product-price-field"
-            id="edit-product-selling-price"
-          />
-          <h6 class="kg">/kg</h6>
+        <div class="add-product-info-row">
+          <h6>Intake Price</h6>
+          <div class="add-product-price">
+            <div>RM</div>
+            <input
+              type="number"
+              v-model="intakePrice"
+              class="add-product-price-field"
+            />
+            <small>/kg</small>
+          </div>
         </div>
-        <div class="profit">
-          <h5>Profit: {{ calculateProfit }}</h5>
+
+        <div class="add-product-info-row">
+          <h6>Selling Price</h6>
+          <div class="add-product-price">
+            <div>RM</div>
+            <input
+              type="number"
+              v-model="sellingPrice"
+              class="add-product-price-field"
+            />
+            <small>/kg</small>
+          </div>
+        </div>
+
+        <div class="add-product-info-row">
+          <h6>Profit:</h6>
+          <div class="profit">
+            {{ calculateProfit }}
+          </div>
         </div>
       </section>
       <button class="primary-btn" @click="addProduct()"><h5>Save</h5></button>
@@ -136,8 +142,9 @@ export default {
         });
         this.$store.commit("setIsLoading", false);
         if (!res.valid) {
-          alert(res.res);
+          this.$store.commit("setSnackBar", res.res);
         } else {
+          this.$store.commit("setSnackBar", "Added product successfully");
           this.$router.replace({ name: "catalogue" });
         }
       } else {
@@ -208,6 +215,7 @@ export default {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+  padding: 1rem;
 }
 
 .add-product-container > section {
@@ -215,6 +223,56 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+}
+
+.add-product-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.add-product-info-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 0.3rem 0rem;
+}
+
+.add-product-info-row > h7 {
+  width: 50%;
+}
+
+.add-product-name,
+.profit,
+.add-product-price {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.add-product-price-field,
+.add-product-name-field {
+  border: 1px solid var(--primary);
+  padding: 0.5rem;
+  color: var(--primary);
+  font-weight: bold;
+  width: 90%;
+}
+
+.add-product-price-field::placeholder,
+.add-product-price-field::-moz-placeholder,
+.add-product-price-field::-ms-placeholder,
+.add-product-name-field::placeholder,
+.add-product-name-field::-moz-placeholder,
+.add-product-name-field::-ms-placeholder {
+  color: var(--primary);
+  font-weight: bold;
 }
 
 .add-save-btn,

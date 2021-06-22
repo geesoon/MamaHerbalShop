@@ -67,8 +67,12 @@ export default {
       this.$router.push({ name: "addProduct" });
     },
     async getProducts() {
-      let products = await Product.getProducts();
-      this.$store.commit("setProducts", products);
+      let res = await Product.getProducts();
+      if (res.valid) {
+        this.$store.commit("setProducts", res.res);
+      } else {
+        this.$store.commit("setSnackBar", res.res);
+      }
       this.$store.commit("setIsLoading", false);
     },
   },

@@ -108,13 +108,13 @@ export default {
     async updateProduct() {
       this.$store.commit("setIsLoading", true);
       let res = await Product.updateProduct(this.productInfo);
-      if (res == null) {
-        console.log("Successfully updated the product");
+      if (res.valid) {
         this.$store.commit("setIsLoading", false);
+        this.$store.commit("setSnackBar", "Product updated successfully.");
         this.$router.replace({ name: "catalogue" });
       } else {
         this.$store.commit("setIsLoading", false);
-        alert(res.message);
+        this.$store.commit("setSnackBar", res.res);
       }
     },
     async confirmRemoveProduct() {
@@ -127,8 +127,12 @@ export default {
     },
     async getProductInfo(id) {
       this.$store.commit("setIsLoading", true);
-      this.productInfo = await Product.getProductById(id);
-      console.log(this.productInfo);
+      let res = await Product.getProductById(id);
+      if (res.valid) {
+        this.productInfo = res.res;
+      } else {
+        this.$store.commit("setSnackBar", res.res);
+      }
       this.$store.commit("setIsLoading", false);
     },
   },

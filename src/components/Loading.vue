@@ -30,7 +30,7 @@ export default {
   width: 100vw;
   height: 100vh;
   top: 0;
-  z-index: 1000;
+  z-index: 999;
   background: var(--accent);
   opacity: 0.9;
   display: flex;

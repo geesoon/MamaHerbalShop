@@ -15,9 +15,9 @@ export default {
           id: doc.id,
         });
       });
-      return products.reverse();
+      return { valid: true, res: products.reverse() };
     } catch (err) {
-      return err;
+      return { valid: false, res: err.message };
     }
   },
   async getProductsByIds(items) {
@@ -51,9 +51,9 @@ export default {
         return a.no - b.no;
       });
 
-      return cartProducts;
+      return { valid: true, res: cartProducts };
     } catch (err) {
-      return err;
+      return { valid: false, res: err };
     }
   },
   async getProductById(id) {
@@ -67,9 +67,9 @@ export default {
         picture: querySnapshot.data().picture,
         id: id,
       };
-      return product;
+      return { valid: true, res: product };
     } catch (err) {
-      return err;
+      return { valid: false, res: err };
     }
   },
   async updateProduct({ name, intakePrice, sellingPrice, id }) {
@@ -81,8 +81,9 @@ export default {
         intakePrice: intakePrice,
         sellingPrice: sellingPrice,
       });
+      return { valid: true };
     } catch (err) {
-      return err;
+      return { valid: false, res: err.message };
     }
   },
   async addProduct(product) {

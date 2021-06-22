@@ -92,8 +92,14 @@ export default {
       let cart = this.$store.getters.getCartItem;
       if (cart.length != 0) {
         this.$store.commit("setIsLoading", true);
-        this.items = await Product.getProductsByIds(cart);
-        this.$store.commit("setIsLoading", false);
+        let res = await Product.getProductsByIds(cart);
+        if (res.valid) {
+          this.items = res.res;
+          this.$store.commit("setIsLoading", false);
+        } else {
+          this.$store.commit("setIsLoading", false);
+          this.$store.commit("setSnackBar", res.res);
+        }
       } else {
         this.resetItems();
       }
@@ -136,9 +142,9 @@ export default {
       if (res.valid) {
         this.$store.commit("clearCart");
         this.getItems();
-        alert("order checkout successfully");
+        this.$store.commit("setSnackBar", "Order checkout successfully");
       } else {
-        alert("order checkout fail");
+        this.$store.commit("setSnackBar", "Order checkout failed");
       }
     },
   },
