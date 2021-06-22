@@ -51,6 +51,7 @@ export default {
   background: var(--primary);
   border-radius: 1rem;
   margin: 1rem 0rem;
+  width: 100%;
 }
 
 .product-picture {

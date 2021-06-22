@@ -110,6 +110,10 @@ export default {
         },
       ];
       this.$store.commit("addToCart", item);
+      this.$store.commit(
+        "setSnackBar",
+        `Added ${this.productInfo.name} to cart.`
+      );
     },
   },
 };
@@ -124,11 +128,49 @@ export default {
   background: white;
   z-index: 3;
   padding: 1rem;
-  transition: top 300ms;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  -webkit-animation: slideUp 0.5s, slideDown 0.5s 2.5s;
+  animation: slideUp 0.5s, slideDown 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes slideUp {
+  from {
+    height: 0%;
+  }
+  to {
+    height: 50%;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: 0%;
+  }
+  to {
+    height: 50%;
+  }
+}
+
+@-webkit-keyframes slideDown {
+  from {
+    height: 100%;
+  }
+  to {
+    height: 0%;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    height: 100%;
+  }
+  to {
+    height: 0%;
+  }
 }
 
 .add-cart-dialog-mask {

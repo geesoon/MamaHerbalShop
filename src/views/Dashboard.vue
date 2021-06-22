@@ -71,20 +71,29 @@
       <router-view />
     </section>
     <Loader v-show="isLoading" />
+    <SnackBar v-show="isShowSnackBar" :message="snackBarMessage" />
   </div>
 </template>
 
 <script>
 import Loader from "@/components/Loading.vue";
+import SnackBar from "@/components/SnackBar.vue";
 import Auth from "@/apis/auth.js";
 
 export default {
   components: {
     Loader,
+    SnackBar,
   },
   computed: {
     isLoading() {
       return this.$store.getters.getIsLoading;
+    },
+    isShowSnackBar() {
+      return this.$store.getters.getSnackBar.show;
+    },
+    snackBarMessage() {
+      return this.$store.getters.getSnackBar.message;
     },
     cartStatus() {
       return this.$store.getters.getCartStatus;
@@ -216,7 +225,7 @@ header {
   top: 0.5rem;
   border-radius: 3px;
   transition: width 300ms, left 300ms;
-  z-index: 999;
+  z-index: 1000;
 }
 
 .sidebar {
@@ -229,6 +238,7 @@ header {
   overflow-y: auto;
   overflow-x: hidden;
   transition: width 300ms;
+  z-index: 1000;
 }
 
 .brand {
@@ -335,7 +345,7 @@ li > div {
   height: 100%;
   width: calc(100% - 280px);
   opacity: 0.8;
-  z-index: 100;
+  z-index: 1000;
   transition: right 300ms;
 }
 
@@ -402,7 +412,7 @@ li > div {
 
   #menu-toggle:checked ~ .sidebar {
     width: 280px;
-    z-index: 100;
+    z-index: 1000;
   }
 
   #menu-toggle:checked ~ header {

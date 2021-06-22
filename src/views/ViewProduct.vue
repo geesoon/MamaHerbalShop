@@ -86,7 +86,12 @@ export default {
     },
     async getProductInfo(id) {
       this.$store.commit("setIsLoading", true);
-      this.productInfo = await Product.getProductById(id);
+      let res = await Product.getProductById(id);
+      if (res.valid) {
+        this.productInfo = res.res;
+      } else {
+        this.$store.commit("setSnackBar", res.res);
+      }
       this.$store.commit("setIsLoading", false);
     },
   },

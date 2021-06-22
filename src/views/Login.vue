@@ -15,7 +15,9 @@
           class="login-input"
           v-model="password"
         />
-        <button class="login-btn" @click="login()"><h4>Login</h4></button>
+        <button class="login-btn" @click="login()">
+          <h4>{{ status }}</h4>
+        </button>
       </div>
     </section>
   </div>
@@ -29,18 +31,21 @@ export default {
     return {
       username: "",
       password: "",
+      status: "Login",
     };
   },
   methods: {
     async login() {
+      this.status = "Logging in...";
       this.$store.commit("setIsLoading", true);
       let res = await Auth.login(this.username, this.password);
       if (res.valid) {
         this.$router.replace({ name: "catalogue" });
       } else {
-        alert(res.res);
+        this.$store.commit("setSnackBar", res.res);
       }
       this.$store.commit("setIsLoading", false);
+      this.status = "Login";
     },
   },
 };

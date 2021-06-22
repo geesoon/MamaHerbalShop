@@ -9,7 +9,7 @@ export default {
       querySnapshot.forEach((order) => {
         orderHistory.push(order.data());
       });
-      return { valid: true, res: orderHistory };
+      return { valid: true, res: orderHistory.reverse() };
     } catch (err) {
       return { valid: false, res: err };
     }
