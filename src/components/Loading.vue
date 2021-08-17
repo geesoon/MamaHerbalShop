@@ -27,9 +27,10 @@ export default {
 <style>
 .overlay {
   position: fixed;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   top: 0;
+  left: 0;
   z-index: 999;
   background: var(--accent);
   opacity: 0.9;

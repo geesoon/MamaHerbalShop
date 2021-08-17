@@ -6,7 +6,6 @@ import store from "./store";
 import firebase from "firebase";
 
 Vue.config.productionTip = false;
-
 var firebaseConfig = {
   apiKey: "AIzaSyBUaOj8eUl5pKvyk0qHdGKc9zgcK3nZNYM",
   authDomain: "mamaherbal-b5d4a.firebaseapp.com",
@@ -20,6 +19,7 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
+firebase.storage();
 
 new Vue({
   router,

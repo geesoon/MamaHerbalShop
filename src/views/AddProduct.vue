@@ -15,6 +15,7 @@
       </div>
       <div v-else class="preview-image-container">
         <img :src="image" class="preview-image" />
+        <h4 v-if="progress != ''">{{ Math.round(progress) }}%</h4>
         <button @click="removeImage" class="remove-image-btn">
           <span class="material-icons"> highlight_off </span>
         </button>
@@ -59,7 +60,9 @@
           </div>
         </div>
       </section>
-      <button class="primary-btn" @click="addProduct()"><h5>Save</h5></button>
+      <button class="primary-btn" @click="addProductPipeline()">
+        <h5>Save</h5>
+      </button>
       <button class="danger-btn" @click="closeDialog()">
         <h5>Discard</h5>
       </button>
@@ -68,8 +71,8 @@
 </template>
 
 <script>
-// import imagemin from "imagemin";
 import Product from "@/apis/products.js";
+import firebase from "firebase";
 
 export default {
   data: () => {
@@ -78,6 +81,7 @@ export default {
       intakePrice: "",
       sellingPrice: "",
       image: "",
+      progress: "",
     };
   },
   computed: {
@@ -98,21 +102,20 @@ export default {
       this.$router.go(-1);
     },
     onFileChange(e) {
-      var files = e.target.files || e.dataTransfer.files;
-      if (!files.length) return;
-      this.createImage(files[0]);
-    },
-    createImage(file) {
-      var reader = new FileReader();
-      var vm = this;
-
-      reader.onload = (e) => {
-        vm.image = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      this.image = e.target.files[0];
     },
     removeImage() {
       this.image = "";
+    },
+    async addProductPipeline() {
+      if (this.validateForm()) {
+        this.$store.commit("setIsLoading", true);
+        this.uploadPic();
+      } else {
+        alert(
+          "1. Only accept numbers for intake or selling price. \n2. Product name cannot be empty."
+        );
+      }
     },
     validateForm() {
       var number = /^[0-9]+$/;
@@ -129,28 +132,64 @@ export default {
         return true;
       }
     },
-    optimizeImage() {},
-    async addProduct() {
-      if (this.validateForm()) {
-        this.optimizeImage();
-        this.$store.commit("setIsLoading", true);
-        let res = await Product.addProduct({
-          picture: this.image,
-          name: this.name,
-          intakePrice: this.intakePrice,
-          sellingPrice: this.sellingPrice,
-        });
-        this.$store.commit("setIsLoading", false);
-        if (!res.valid) {
-          this.$store.commit("setSnackBar", res.res);
-        } else {
-          this.$store.commit("setSnackBar", "Added product successfully");
-          this.$router.replace({ name: "catalogue" });
+    async uploadPic() {
+      var metadata = {
+        contentType: this.image.type,
+      };
+      var storage = firebase.storage();
+      var storageRef = storage.ref();
+      var uploadTask = storageRef
+        .child("productPic/" + this.name)
+        .put(this.image, metadata);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          this.progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          switch (snapshot.state) {
+            case firebase.storage.TaskState.PAUSED: // or 'paused'
+              console.log("Upload is paused");
+              break;
+            case firebase.storage.TaskState.RUNNING: // or 'running'
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          switch (error.code) {
+            case "storage/unauthorized":
+              alert("User doesn't have permission to access the object");
+              break;
+            case "storage/canceled":
+              alert("User canceled the upload");
+              break;
+            case "storage/unknown":
+              alert("Unknown error occurred, inspect error.serverResponse");
+              break;
+          }
+        },
+        () => {
+          // Upload completed successfully, now we can get the download URL
+          uploadTask.snapshot.ref.getDownloadURL().then((url) => {
+            this.addProduct(url);
+          });
         }
+      );
+    },
+    async addProduct(url) {
+      let res = await Product.addProduct({
+        picUrl: url,
+        name: this.name,
+        intakePrice: this.intakePrice,
+        sellingPrice: this.sellingPrice,
+      });
+
+      this.$store.commit("setIsLoading", false);
+      if (!res.valid) {
+        this.$store.commit("setSnackBar", res.res);
       } else {
-        alert(
-          "1. Only accept numbers for intake or selling price. \n2. Product name cannot be empty."
-        );
+        this.$store.commit("setSnackBar", "Added product successfully");
+        this.$router.replace({ name: "catalogue" });
       }
     },
   },
@@ -207,6 +246,7 @@ export default {
   opacity: 0;
   padding: 2rem;
   height: 200px;
+  width: 100%;
 }
 
 .add-product-container {
@@ -231,6 +271,7 @@ export default {
   justify-content: center;
   align-items: flex-start;
   width: 100%;
+  margin: 1rem 0rem;
 }
 
 .add-product-info-row {
@@ -263,6 +304,7 @@ export default {
   color: var(--primary);
   font-weight: bold;
   width: 90%;
+  margin: 0rem 0.5rem;
 }
 
 .add-product-price-field::placeholder,

@@ -234,13 +234,15 @@ export default {
     width: 15%;
   }
 
+  .cart-item-list {
+    width: 70%;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
   .cart-panel {
     left: calc(280px + 1rem);
     width: calc(100% - 280px - 1rem);
-  }
-
-  .cart-item-list {
-    width: 70%;
   }
 }
 </style>

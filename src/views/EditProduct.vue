@@ -2,9 +2,9 @@
   <div class="edit-product-container">
     <section v-if="!isLoading">
       <img
-        v-if="productInfo.picture != ''"
+        v-if="productInfo.picUrl != ''"
         class="edit-product-picture"
-        :src="productInfo.picture"
+        :src="productInfo.picUrl"
         :alt="productInfo.name"
       />
       <img v-else src="../assets/no-image.svg" class="edit-product-picture" />

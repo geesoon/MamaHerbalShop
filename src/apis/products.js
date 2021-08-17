@@ -11,7 +11,7 @@ export default {
           name: doc.data().name,
           intakePrice: doc.data().intakePrice,
           sellingPrice: doc.data().sellingPrice,
-          picture: doc.data().picture,
+          picUrl: doc.data().picUrl,
           id: doc.id,
         });
       });
@@ -30,7 +30,7 @@ export default {
           name: doc.data().name,
           intakePrice: doc.data().intakePrice,
           sellingPrice: doc.data().sellingPrice,
-          picture: doc.data().picture,
+          picUrl: doc.data().picUrl,
           id: doc.id,
         });
       });
@@ -64,7 +64,7 @@ export default {
         name: querySnapshot.data().name,
         intakePrice: querySnapshot.data().intakePrice,
         sellingPrice: querySnapshot.data().sellingPrice,
-        picture: querySnapshot.data().picture,
+        picUrl: querySnapshot.data().picUrl,
         id: id,
       };
       return { valid: true, res: product };
@@ -87,6 +87,7 @@ export default {
     }
   },
   async addProduct(product) {
+    console.log(product);
     try {
       const db = firebase.firestore();
       let res = db.collection("products").add(product);

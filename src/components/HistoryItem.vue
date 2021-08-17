@@ -1,7 +1,7 @@
 <template>
   <div class="history-item-container">
     <div class="history-sold-to">
-      <h5>{{ history.soldTo == "" ? "Mr.Nobody" : history.soldTo }}</h5>
+      <h5>{{ history.soldTo == "" ? "None" : history.soldTo }}</h5>
     </div>
     <div class="history-sold-date">
       <h5>{{ history.date }}</h5>

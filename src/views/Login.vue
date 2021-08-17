@@ -3,12 +3,14 @@
     <section class="login-container">
       <div class="title"><h1>Mama's Herbal</h1></div>
       <div class="login-form">
+        Email
         <input
           type="text"
           placeholder="username"
           class="login-input"
           v-model="username"
         />
+        Password
         <input
           type="password"
           placeholder="password"
@@ -79,14 +81,13 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
   width: 100%;
 }
 
 .login-input {
   padding: 1rem;
   margin: 0.5rem 0rem;
-  width: 80%;
+  width: 100%;
   border: 2px solid var(--primary);
   color: var(--primary);
   font-size: 1.3rem;
@@ -101,7 +102,6 @@ export default {
 }
 
 .login-btn {
-  width: 80%;
   padding: 1rem;
   margin: 1rem 0rem;
   background: #41453e;

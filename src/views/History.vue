@@ -11,7 +11,7 @@ import HistoryItem from "@/components/HistoryItem.vue";
 export default {
   data() {
     return {
-      history: "",
+      history: [],
     };
   },
   components: {

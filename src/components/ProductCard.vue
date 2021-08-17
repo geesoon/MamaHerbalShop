@@ -1,8 +1,8 @@
 <template>
   <div class="card-container">
     <img
-      :src="productInfo.picture"
-      v-if="productInfo.picture != ''"
+      :src="productInfo.picUrl"
+      v-if="productInfo.picUrl != ''"
       class="product-picture"
     />
     <img src="../assets/no-image.svg" v-else class="product-picture" />
@@ -31,7 +31,7 @@ export default {
       name: String,
       intakePrice: String,
       sellingPrice: String,
-      picture: String,
+      picUrl: String,
     },
   },
   methods: {
@@ -62,7 +62,7 @@ export default {
 }
 
 .product-info {
-  width: 100%;
+  min-width: 100%;
   height: 30%;
   display: flex;
   flex-direction: row;
@@ -78,6 +78,7 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
   width: 50%;
+  margin: 0rem 1rem;
 }
 
 .product-name {

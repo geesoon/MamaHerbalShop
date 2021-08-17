@@ -7,15 +7,6 @@
         <h4>Mama's Herbal</h4>
       </div>
       <div class="sidemenu">
-        <div class="side-user">
-          <div
-            class="side-img"
-            style="background-image: url('https://i.pravatar.cc/150')"
-          ></div>
-        </div>
-        <div class="user">
-          <small>Admin</small>
-        </div>
         <ul>
           <li>
             <router-link to="/dashboard/product"
@@ -62,9 +53,11 @@
           v-model="search"
         />
       </div>
-      <div @click="showCart()">
-        <div class="cart-status">{{ cartStatus }}</div>
-        <span class="material-icons cart"> shopping_cart </span>
+      <div>
+        <router-link to="/dashboard/cart" active-class="cart-route-link">
+          <div class="cart-status">{{ cartStatus }}</div>
+          <span class="material-icons cart"> shopping_cart </span>
+        </router-link>
       </div>
     </header>
     <section class="main-content">
@@ -427,8 +420,8 @@ li > div {
 }
 
 #add-fab {
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   position: fixed;
   bottom: 5%;
   right: 5%;
@@ -438,7 +431,7 @@ li > div {
 }
 
 .add-fab > span {
-  font-size: 40px;
+  font-size: 50px;
 }
 
 @media only screen and (min-width: 600px) {

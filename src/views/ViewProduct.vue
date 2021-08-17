@@ -1,33 +1,30 @@
 <template>
-  <div class="view-product-container">
-    <section v-if="!isLoading">
-      <section class="view-product-info">
-        <img
-          v-if="productInfo.picture != ''"
-          class="view-product-picture"
-          :src="productInfo.picture"
-          :alt="productInfo.name"
-        />
-        <img v-else src="../assets/no-image.svg" class="view-product-picture" />
-        <div class="view-product-info-row">
-          <div>Product Name:</div>
-          {{ productInfo.name }}
-        </div>
-        <div class="view-product-info-row">
-          <div>Intake Price:</div>
-          {{ formatPrice(productInfo.intakePrice) }}
-        </div>
-        <div class="view-product-info-row">
-          <div>Selling Price:</div>
-          {{ formatPrice(productInfo.sellingPrice) }}
-        </div>
-        <div class="view-product-info-row">
-          <div>Profit:</div>
-          {{ calculateProfit }}
-        </div>
-        <button @click="showEditProduct()" class="secondary-btn">Edit</button>
-      </section>
-
+  <div class="view-product-container" v-if="!isLoading">
+    <section class="view-product-info">
+      <img
+        v-if="productInfo.picture != ''"
+        class="view-product-picture"
+        :src="productInfo.picUrl"
+        :alt="productInfo.name"
+      />
+      <img v-else src="../assets/no-image.svg" class="view-product-picture" />
+      <div class="view-product-info-row">
+        <div>Product Name:</div>
+        {{ productInfo.name }}
+      </div>
+      <div class="view-product-info-row">
+        <div>Intake Price:</div>
+        {{ formatPrice(productInfo.intakePrice) }}
+      </div>
+      <div class="view-product-info-row">
+        <div>Selling Price:</div>
+        {{ formatPrice(productInfo.sellingPrice) }}
+      </div>
+      <div class="view-product-info-row">
+        <div>Profit:</div>
+        {{ calculateProfit }}
+      </div>
+      <button @click="showEditProduct()" class="secondary-btn">Edit</button>
       <button @click="toggleAddToCartDialog()" class="primary-btn">
         Add To Cart
       </button>
