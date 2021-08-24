@@ -16,17 +16,14 @@
           <h6>Price: {{ price }}</h6>
         </div>
         <div class="cart-item-quantity">
-          <h6>Quantity</h6>
-          <small>
-            <input
-              type="number"
-              :placeholder="item.quantity"
-              v-model="item.quantity"
-            />g
-          </small>
+          <v-text-field
+            type="number"
+            label="quantity"
+            suffix="g"
+            v-model="item.quantity"
+          />
         </div>
       </div>
-
       <div class="amount">
         <h6>Subtotal: {{ subtotal }}</h6>
         <h6>Profit: {{ profit }}</h6>
@@ -97,9 +94,8 @@ export default {
 .cart-item-quantity {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  width: 100%;
 }
 
 .cart-item-quantity > small > input {

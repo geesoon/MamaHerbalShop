@@ -1,86 +1,114 @@
 <template>
   <div class="cart-container" v-if="!isLoading && this.items.length != 0">
-    <div style="width: 100%">
-      <h4>Sold To:</h4>
-      <input type="text" placeholder="Sold to" v-model="soldTo" />
-    </div>
     <div class="cart-item-list">
       <CartItem v-for="(item, key) in items" :item="item" :key="key" />
     </div>
+
     <div class="cart-panel">
-      <div class="cart-panel-order-info">
-        <div class="cart-panel-col">
-          <div class="cart-panel-row">
-            <small>Sold to: {{ soldTo }}</small>
-          </div>
-          <div class="cart-panel-row">
-            <small>Date: </small>
-            <small>
-              {{ formattedDate }}
-            </small>
-          </div>
-        </div>
-        <div class="cart-panel-col">
-          <div class="cart-panel-row">
+      <v-container fluid>
+        <v-row>
+          <v-col>
+            <v-dialog v-model="showCartSoldToDialog" width="500">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn x-small color="secondary" v-bind="attrs" v-on="on"
+                  >Sold to:
+                </v-btn>
+              </template>
+              <CartSoldToDialog
+                @closeDialog="toggleCartSoldToDialog"
+                :soldTo="soldTo"
+              />
+            </v-dialog>
+            <div>
+              {{ soldTo }}
+            </div>
+          </v-col>
+          <v-col>
             <small>Total Cost:</small>
             <small
               ><strong>RM{{ totalCost() }}</strong></small
             >
-          </div>
-          <div class="cart-panel-row">
-            <small>Order Total: </small>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-dialog v-model="showCartSoldDateDialog" width="400">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn x-small color="secondary" v-bind="attrs" v-on="on">
+                  <small>Date: </small>
+                  <small>
+                    {{ formattedDate }}
+                  </small></v-btn
+                >
+              </template>
+              <CartSoldDateDialog
+                @closeDialog="toggleCartSoldDateDialog"
+                :soldDate="soldDate"
+              />
+            </v-dialog>
+          </v-col>
+          <v-col>
+            <small>Order Total:</small>
+            <small>RM{{ totalPrice() }}</small>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
             <small
-              ><strong>RM{{ totalPrice() }}</strong></small
+              >Profits:
+              <small>
+                <strong>{{
+                  totalProfit() > 0
+                    ? `+ RM ${totalProfit()}`
+                    : `- RM ${totalProfit()}`
+                }}</strong>
+              </small></small
             >
-          </div>
-          <div class="cart-panel-row">
-            <small>Profits: </small>
-            <small>
-              <strong>{{
-                totalProfit() > 0
-                  ? `+ RM ${totalProfit()}`
-                  : `- RM ${totalProfit()}`
-              }}</strong>
-            </small>
-          </div>
-        </div>
-      </div>
-      <button class="primary-btn" @click="checkOutOrder()">
-        Check Out Order
-      </button>
+          </v-col>
+        </v-row>
+        <v-row class="cart-actions">
+          <v-btn color="primary" @click="checkOutOrder()">Check Out</v-btn>
+        </v-row>
+      </v-container>
     </div>
   </div>
   <div class="no-item-cart-container" v-else>
     <div class="no-items-image-container">
       <img src="../assets/empty_cart.svg" alt="empty cart" />
-      <span>There are no items in the cart.</span>
+      <br />
+      <span>Nothing in the cart.</span>
     </div>
-    <div>
-      <button class="primary-btn">
+    <section class="cart-actions">
+      <v-btn outlined>
         <router-link to="/product">Continue Adding</router-link>
-      </button>
-    </div>
-    <div>
-      <button class="outline-btn">
+      </v-btn>
+
+      <v-btn outlined>
         <router-link to="/history">View Order History</router-link>
-      </button>
-    </div>
+      </v-btn>
+    </section>
   </div>
 </template>
 
 <script>
+import CartSoldToDialog from "@/components/CartSoldToDialog.vue";
+import CartSoldDateDialog from "@/components/CartSoldDateDialog.vue";
 import CartItem from "@/components/CartItem.vue";
 import Product from "@/apis/products.js";
 
 export default {
   components: {
     CartItem,
+    CartSoldToDialog,
+    CartSoldDateDialog,
   },
   data() {
     return {
       items: [],
-      date: new Date(),
+      soldDate: "",
       soldTo: "",
+      showCartSoldToDialog: false,
+      showCartSoldDateDialog: false,
     };
   },
   computed: {
@@ -88,10 +116,20 @@ export default {
       return this.$store.getters.getIsLoading;
     },
     formattedDate() {
-      return `${this.date.getDate()}/${this.date.getMonth()}/${this.date.getFullYear()}`;
+      return this.soldDate;
+      // return `${this.soldDate.getDate()}/${this.soldDate.getMonth()}/${this.soldDate.getFullYear()}`;
     },
   },
   methods: {
+    toggleCartSoldToDialog(value) {
+      console.log(value);
+      this.showCartSoldToDialog = false;
+      this.soldTo = value;
+    },
+    toggleCartSoldDateDialog(value) {
+      this.showCartSoldDateDialog = false;
+      this.soldDate = value;
+    },
     async getItems() {
       let cart = this.$store.getters.getCartItem;
       if (cart.length != 0) {
@@ -151,14 +189,33 @@ export default {
         this.$store.commit("setSnackBar", "Order checkout failed");
       }
     },
+    initiateDate() {
+      var today = new Date();
+      var dd = String(today.getDate()).padStart(2, "0");
+      var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+      var yyyy = today.getFullYear();
+
+      today = yyyy + "-" + mm + "-" + dd;
+      this.soldDate = today;
+    },
   },
   created() {
     this.getItems();
+    this.initiateDate();
   },
 };
 </script>
 
 <style>
+.cart-actions > button {
+  width: 80%;
+  margin: 1rem 0rem;
+}
+
+.cart-actions {
+  margin: 1rem 0rem;
+}
+
 /* Cart without items */
 .no-item-cart-container {
   display: flex;
@@ -167,6 +224,7 @@ export default {
   align-items: center;
   width: 100%;
   text-align: center;
+  margin-top: 2rem;
 }
 
 .no-items-image-container {
@@ -186,15 +244,15 @@ export default {
 .cart-container {
   display: flex;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   flex-direction: column;
   min-height: 100vh;
   max-width: 100vw;
-  margin: 0rem 1rem;
 }
 
 .cart-item-list {
   min-width: 100%;
+  max-width: 100%;
   max-height: 75vh;
   overflow-y: scroll;
   -ms-overflow-style: none; /* IE and Edge */
@@ -211,46 +269,33 @@ export default {
   bottom: 0px;
   left: 0px;
   width: 100%;
-  padding: 1rem;
   background: white;
-}
-
-.cart-panel-order-info {
-  display: flex;
-  flex-direction: row;
-}
-
-.cart-panel-col:first-child {
-  margin-right: 0.5rem;
-}
-
-.cart-panel-col {
-  min-width: 48%;
-  display: flex;
-  flex-direction: column;
-}
-
-.cart-panel-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
 }
 
 @media only screen and (min-width: 600px) {
   .no-items-image-container > img {
     width: 15%;
   }
-
   .cart-item-list {
-    width: 70%;
+    min-width: 80%;
+    max-width: 80%;
+  }
+
+  .cart-panel {
+    left: 10%;
+    width: 80%;
   }
 }
 
 @media only screen and (min-width: 1024px) {
+  .cart-item-list {
+    min-width: 50%;
+    max-width: 50%;
+  }
+
   .cart-panel {
-    left: calc(280px + 1rem);
-    width: calc(100% - 280px - 1rem);
+    left: 25%;
+    width: 50%;
   }
 }
 </style>
