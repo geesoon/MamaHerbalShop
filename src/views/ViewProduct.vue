@@ -1,6 +1,6 @@
 <template>
   <div class="view-product-container" v-if="!isLoading">
-    <section class="view-product-info">
+    <v-card class="view-product-info">
       <div class="view-image-container">
         <img
           v-if="productInfo.picture != ''"
@@ -8,15 +8,14 @@
           :src="productInfo.picUrl"
           :alt="productInfo.name"
         />
-        <img v-else src="../assets/no-image.svg" class="view-product-picture" />
+        <img v-else src="@/assets/no-image.svg" class="view-product-picture" />
       </div>
-      <div class="view-product-info-container">
+      <v-card-title>
+        {{ productInfo.name }}
+      </v-card-title>
+      <v-card-text>
         <div class="view-product-info-row">
-          <div>Product Name:</div>
-          {{ productInfo.name }}
-        </div>
-        <div class="view-product-info-row">
-          <div>Intake Price:</div>
+          <div>Cost:</div>
           {{ formatPrice(productInfo.intakePrice) }}
         </div>
         <div class="view-product-info-row">
@@ -27,19 +26,23 @@
           <div>Profit:</div>
           {{ calculateProfit }}
         </div>
-        <div>
-          <button @click="showEditProduct()" class="secondary-btn">Edit</button>
-          <button @click="toggleAddToCartDialog()" class="primary-btn">
-            Add To Cart
-          </button>
-        </div>
-      </div>
-      <AddToCartDialog
-        @toggleDialog="toggleAddToCartDialog()"
-        :productInfo="productInfo"
-        v-if="isAddToCartDialog"
-      />
-    </section>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn @click="showEditProduct()" color="primary">Edit</v-btn>
+        <v-btn @click="toggleAddToCartDialog()" color="secondary">
+          Add To Cart
+        </v-btn>
+      </v-card-actions>
+
+      <v-bottom-sheet v-model="isAddToCartDialog" inset>
+        <v-sheet height="40vh">
+          <AddToCartDialog
+            @toggleDialog="toggleAddToCartDialog()"
+            :productInfo="productInfo"
+          />
+        </v-sheet>
+      </v-bottom-sheet>
+    </v-card>
   </div>
 </template>
 
@@ -80,7 +83,7 @@ export default {
     },
     showEditProduct() {
       this.$router.push({
-        name: "editProduct",
+        name: "edit_product",
         query: { id: this.productInfo.id },
       });
     },
@@ -105,14 +108,6 @@ export default {
 </script>
 
 <style>
-.view-product-info-row {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .view-product-container {
   display: flex;
   flex-direction: column;
@@ -122,9 +117,18 @@ export default {
   width: 100%;
 }
 
+.view-product-info-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .view-product-picture {
   max-width: 100%;
   object-fit: cover;
+  max-height: 30vh;
 }
 
 .view-product-info {
@@ -133,12 +137,8 @@ export default {
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin-bottom: 2rem;
-  border-radius: 1rem;
-  background: white;
 }
 
-.view-product-info-container,
 .view-image-container {
   width: 100%;
   text-align: center;
@@ -154,12 +154,9 @@ export default {
   .view-product-info {
     max-width: 100%;
   }
-  .view-image-container {
-    max-width: 30%;
-  }
-  .view-product-info-container {
-    max-width: 70%;
-    text-align: center;
+
+  .view-product-info {
+    width: 50%;
   }
 }
 </style>

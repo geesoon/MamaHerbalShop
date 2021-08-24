@@ -1,91 +1,84 @@
 <template>
-  <div class="edit-product-container">
-    <section v-if="!isLoading">
-      <img
-        v-if="productInfo.picUrl != ''"
-        class="edit-product-picture"
-        :src="productInfo.picUrl"
-        :alt="productInfo.name"
+  <div class="edit-product-container" v-if="!isLoading">
+    <img
+      v-if="productInfo.picUrl != ''"
+      class="edit-product-picture"
+      :src="productInfo.picUrl"
+      :alt="productInfo.name"
+    />
+    <img v-else src="@/assets/no-image.svg" class="edit-product-picture" />
+    <div class="edit-product-info">
+      <v-text-field
+        type="text"
+        label="Name"
+        :placeholder="productInfo.name"
+        v-model="productInfo.name"
+        class="edit-product-name-field"
       />
-      <img v-else src="../assets/no-image.svg" class="edit-product-picture" />
-      <section class="edit-product-info">
-        <div class="edit-product-info-row">
-          <h6>Product Name</h6>
-          <div class="edit-product-name">
-            <input
-              type="text"
-              :placeholder="productInfo.name"
-              v-model="productInfo.name"
-              class="edit-product-name-field"
-            />
-          </div>
-        </div>
-
-        <div class="edit-product-info-row">
-          <h6>Intake Price</h6>
-          <div class="edit-product-price">
-            <div>RM</div>
-            <input
-              type="number"
-              :placeholder="formatPrice(productInfo.intakePrice)"
-              v-model="productInfo.intakePrice"
-              class="edit-product-price-field"
-            />
-            <small>/kg</small>
-          </div>
-        </div>
-
-        <div class="edit-product-info-row">
-          <h6>Selling Price</h6>
-          <div class="edit-product-price">
-            <div>RM</div>
-            <input
-              type="number"
-              :placeholder="formatPrice(productInfo.sellingPrice)"
-              v-model="productInfo.sellingPrice"
-              class="edit-product-price-field"
-            />
-            <small>/kg</small>
-          </div>
-        </div>
-
-        <div class="edit-product-info-row">
-          <h6>Profit:</h6>
-          <div class="profit">
-            {{ calculateProfit }}
-          </div>
-        </div>
-      </section>
-      <button class="primary-btn" @click="updateProduct()">Save</button>
-      <button class="danger-btn" @click="closeDialog()">Discard</button>
-      <button class="remove-product-btn" @click="showConfirmationPrompt = true">
-        <span class="material-icons"> delete </span>
-      </button>
-      <div class="confirmation-mask" v-if="showConfirmationPrompt"></div>
-      <div class="confirmation-prompt" v-if="showConfirmationPrompt">
-        <h6>Confirm remove "{{ productInfo.name }}"?</h6>
-        <div class="confirmation-btn-bar">
-          <button class="primary-btn" @click="confirmRemoveProduct()">
-            Confirm
-          </button>
-          <button class="danger-btn" @click="showConfirmationPrompt = false">
-            Cancel
-          </button>
-        </div>
+      <v-text-field
+        type="number"
+        label="Cost"
+        prefix="RM"
+        :placeholder="formatPrice(productInfo.intakePrice)"
+        v-model="productInfo.intakePrice"
+        class="edit-product-price-field"
+      />
+      <v-text-field
+        label="Selling Price"
+        prefix="RM"
+        type="number"
+        :placeholder="formatPrice(productInfo.sellingPrice)"
+        v-model="productInfo.sellingPrice"
+        class="edit-product-price-field"
+      />
+      <div class="profit">
+        <h6>Profit:</h6>
+        {{ calculateProfit }}
       </div>
-    </section>
+    </div>
+    <div class="edit-product-actions">
+      <v-btn color="primary" @click="updateProduct()">Save</v-btn>
+      <v-btn color="secondary" @click="closeDialog()">Discard</v-btn>
+      <v-dialog v-model="dialog" persistent max-width="400">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn class="remove-product-btn" v-bind="attrs" v-on="on">
+            <span class="material-icons"> delete </span>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title class="text-h5">
+            Confirm remove {{ productInfo.name }}?
+          </v-card-title>
+          <v-card-text>Product removed cannot be restored.</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="red darken-1" text @click="confirmRemoveProduct">
+              Yes
+            </v-btn>
+            <v-btn color="green darken-1" text @click="dialog = false">
+              No
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
   </div>
+  <Loader v-else />
 </template>
 
 <script>
+import Loader from "@/components/Loading.vue";
 import Product from "@/apis/products.js";
 
 export default {
   data: () => {
     return {
-      showConfirmationPrompt: false,
       productInfo: "",
+      dialog: false,
     };
+  },
+  components: {
+    Loader,
   },
   computed: {
     calculateProfit() {
@@ -111,18 +104,18 @@ export default {
       if (res.valid) {
         this.$store.commit("setIsLoading", false);
         this.$store.commit("setSnackBar", "Product updated successfully.");
-        this.$router.replace({ name: "catalogue" });
+        this.$router.go(-1);
       } else {
         this.$store.commit("setIsLoading", false);
         this.$store.commit("setSnackBar", res.res);
       }
     },
     async confirmRemoveProduct() {
+      this.dialog = false;
       this.$store.commit("setIsLoading", true);
       await Product.removeProductById(this.productInfo.id);
-      console.log("Successfully deleted the product");
+      this.$store.commit("setSnackBar", "Successfully deleted the product");
       this.$store.commit("setIsLoading", false);
-      this.showConfirmationPrompt = false;
       this.$router.replace({ name: "catalogue" });
     },
     async getProductInfo(id) {
@@ -143,60 +136,6 @@ export default {
 </script>
 
 <style>
-.background-mask {
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  opacity: 0.8;
-  position: fixed;
-}
-
-.confirmation-mask {
-  width: 100%;
-  height: 100%;
-  background: white;
-  opacity: 0.8;
-  z-index: 1000;
-  position: fixed;
-  left: 0;
-  top: 0;
-}
-
-.confirmation-prompt {
-  position: fixed;
-  top: 25%;
-  background: white;
-  border: 2px solid var(--primary);
-  z-index: 1001;
-  padding: 1rem;
-}
-
-.confirmation-btn-bar {
-  margin: 1rem 0rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.confirm-remove-btn {
-  background: var(--danger);
-}
-
-.cancel-remove-btn {
-  background: var(--primary);
-}
-
-.confirm-remove-btn,
-.cancel-remove-btn {
-  color: white;
-  border-radius: 1rem;
-  width: 50%;
-  padding: 1rem;
-  margin: 1rem 0rem;
-}
-
 .edit-product-container {
   display: flex;
   flex-direction: column;
@@ -206,100 +145,40 @@ export default {
   width: 100%;
 }
 
-.edit-product-container > section {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 .edit-product-picture {
-  max-width: 80%;
+  max-width: 100%;
+  max-height: 35vh;
   height: auto;
   margin: 1rem;
 }
 
 .edit-product-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
   width: 100%;
+  margin: 2rem 0rem;
 }
 
-.edit-product-info-row {
+.edit-product-actions {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin: 0.3rem 0rem;
-}
-
-.edit-product-info-row > h7 {
-  width: 50%;
-}
-
-.edit-product-name,
-.profit,
-.edit-product-price {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   width: 100%;
 }
 
-.edit-product-price-field,
-.edit-product-name-field {
-  border: 1px solid var(--primary);
-  padding: 0.5rem;
-  color: var(--primary);
-  font-weight: bold;
-  width: 90%;
+@media only screen and (min-width: 768px) {
+  .edit-product-info {
+    width: 90%;
+  }
 }
 
-.edit-product-price-field::placeholder,
-.edit-product-price-field::-moz-placeholder,
-.edit-product-price-field::-ms-placeholder,
-.edit-product-name-field::placeholder,
-.edit-product-name-field::-moz-placeholder,
-.edit-product-name-field::-ms-placeholder {
-  color: var(--primary);
-  font-weight: bold;
-}
+@media only screen and (min-width: 1024px) {
+  .edit-product-actions,
+  .edit-product-info {
+    width: 50%;
+  }
 
-.edit-save-btn,
-.edit-discard-btn {
-  color: white;
-  margin: 0.5rem 0rem;
-  padding: 0.5rem;
-  width: 100%;
-}
-
-.remove-product-btn {
-  border-radius: 100%;
-  background: var(--accent);
-  padding: 1rem;
-}
-
-.edit-save-btn,
-.add-save-btn {
-  background: var(--primary);
-}
-
-.edit-discard-btn,
-.add-discard-btn {
-  background: var(--danger);
-}
-
-.remove-product-btn {
-  margin: 1rem 0rem;
-}
-
-@media only screen and (min-width: 600px) {
-  .edit-product-container > section {
-    max-width: 60%;
+  .edit-product-picture {
+    max-width: 50%;
   }
 }
 </style>

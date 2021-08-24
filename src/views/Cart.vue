@@ -57,12 +57,12 @@
     </div>
     <div>
       <button class="primary-btn">
-        <router-link to="/dashboard/product">Continue Adding</router-link>
+        <router-link to="/product">Continue Adding</router-link>
       </button>
     </div>
     <div>
       <button class="outline-btn">
-        <router-link to="/dashboard/history">View Order History</router-link>
+        <router-link to="/history">View Order History</router-link>
       </button>
     </div>
   </div>

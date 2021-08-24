@@ -1,67 +1,33 @@
 <template>
-  <section>
-    <div class="add-cart-dialog-mask" @click="toggleAddToCartDialog()"></div>
-    <section class="add-cart-dialog">
-      <div class="add-cart-dialog-header">
-        <div class="add-cart-product-pic">
-          <img
-            v-if="productInfo.picUrl != ''"
-            class="cart-product-picture"
-            :src="productInfo.picUrl"
-            :alt="productInfo.name"
-          />
-          <img
-            v-else
-            src="../assets/no-image.svg"
-            class="cart-product-picture"
-          />
+  <section class="add-cart-dialog">
+    <div class="add-cart-dialog-body">
+      <div class="add-cart-selection-container">
+        <v-slider
+          v-model="quantity"
+          step="100"
+          min="0"
+          max="10000"
+          ticks
+          label="Quantity(g)"
+          thumb-label="always"
+        ></v-slider>
+        <div class="add-cart-selections">
+          <h4>Cost:</h4>
+          <span>RM{{ calculateCost }}</span>
         </div>
-        <div class="add-cart-product-prices">
-          <small
-            >Intake Price: RM{{
-              parseFloat(this.productInfo.intakePrice).toFixed(2)
-            }}</small
-          >
-          <small
-            >Selling Price: RM{{
-              parseFloat(this.productInfo.sellingPrice).toFixed(2)
-            }}</small
-          >
+        <div class="add-cart-selections">
+          <h4>Price:</h4>
+          <span>RM{{ calculatePrice }}</span>
         </div>
-        <span
-          class="material-icons add-cart-close"
-          @click="toggleAddToCartDialog()"
-        >
-          close
-        </span>
-      </div>
-      <div class="add-cart-dialog-body">
-        <div class="add-cart-selection-container">
-          <div class="add-cart-selections">
-            <small>Quantity:</small>
-            <div class="cart-quantity">
-              <input type="number" placeholder="1000" v-model="quantity" />
-              <span>g</span>
-            </div>
-          </div>
-          <div class="add-cart-selections">
-            <small>Cost:</small>
-            <span>RM{{ calculateCost }}</span>
-          </div>
-          <div class="add-cart-selections">
-            <small>Price:</small>
-            <span>RM{{ calculatePrice }}</span>
-          </div>
-          <div class="add-cart-selections">
-            <small>Profit:</small>
-            <span>{{ calculateProfit }}</span>
-          </div>
+        <div class="add-cart-selections">
+          <h4>Profit:</h4>
+          <span>{{ calculateProfit }}</span>
         </div>
       </div>
-      <div class="add-cart-dialog-action">
-        <button @click="addToCart()" class="primary-btn">Add To Cart</button>
-      </div>
-    </section>
+    </div>
+    <div class="add-cart-dialog-action">
+      <v-btn @click="addToCart()" color="primary">Add To Cart</v-btn>
+    </div>
   </section>
 </template>
 
@@ -69,11 +35,12 @@
 export default {
   data() {
     return {
-      quantity: 1000,
+      quantity: 100,
     };
   },
   props: {
     productInfo: Object,
+    showDialog: Boolean,
   },
   computed: {
     calculateCost() {
@@ -90,7 +57,6 @@ export default {
       let profit = parseFloat(this.calculatePrice - this.calculateCost).toFixed(
         2
       );
-      console.log(profit);
       if (profit > 0) {
         return `+ RM ${profit}`;
       } else {
@@ -122,32 +88,22 @@ export default {
 
 <style>
 .add-cart-dialog {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: whitesmoke;
-  z-index: 3;
-  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 1rem;
+  width: 100%;
 }
 
-.add-cart-dialog-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
+.add-cart-dialog-body {
   width: 100%;
-  background: white;
-  opacity: 0.8;
-  z-index: 2;
+  margin-top: 1rem;
 }
 
 .cart-product-picture {
   width: 100%;
+  max-height: 35vh;
   height: auto;
 }
 
@@ -202,12 +158,9 @@ export default {
   width: 100%;
 }
 
-.add-cart-dialog-body {
-  width: 90%;
-}
-
-@media only screen and (min-width: 600px) {
-  .add-cart-dialog > div {
+@media screen and (min-width: 1024px) {
+  .add-cart-dialog-action,
+  .add-cart-dialog-body {
     width: 60%;
   }
 }

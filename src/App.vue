@@ -1,108 +1,302 @@
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+  <v-app>
+    <!-- App Bar -->
+    <v-app-bar app v-if="this.$route.name != 'login'">
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <div class="search-cart-container">
+        <v-text-field
+          v-if="this.$route.name == 'catalogue'"
+          prepend-inner-icon="mdi-magnify"
+          type="text"
+          placeholder="Search in Catalogue"
+          v-model="search"
+          filled
+          full-width
+          dense
+          rounded
+          hide-details="auto"
+        ></v-text-field>
+        <div class="menu-route-container" v-else>
+          <h2>
+            {{ routeName }}
+          </h2>
+        </div>
+        <div class="cart-icon-container">
+          <router-link to="/cart" active-class="cart-route-link">
+            <div class="cart-status">{{ cartStatus }}</div>
+            <span class="material-icons cart"> shopping_cart </span>
+          </router-link>
+        </div>
+      </div>
+    </v-app-bar>
+
+    <!-- Drawer -->
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+      bottom
+      temporary
+      v-if="this.$route.name != 'login'"
+    >
+      <v-list nav dense>
+        <v-list-item-group
+          v-model="group"
+          active-class="deep-purple--text text--accent-4"
+        >
+          <v-list-item>
+            <v-list-item-title class="brand">
+              <img src="./assets/logo/android-chrome-192x192.png" />
+              <span>Mama's Herbal</span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/product" class="drawer-items"
+                ><span class="material-icons"> home </span>
+                <span>Catalogue</span>
+              </router-link>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/cart" class="drawer-items"
+                ><span class="material-icons"> shopping_basket </span>
+                <span>Cart</span></router-link
+              ></v-list-item-title
+            >
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/history" class="drawer-items"
+                ><span class="material-icons"> history </span>
+                <span>Order History</span></router-link
+              ></v-list-item-title
+            >
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/statistics" class="drawer-items"
+                ><span class="material-icons"> trending_up </span>
+                <span>Statistics</span></router-link
+              ></v-list-item-title
+            >
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-title>
+              <a href="" @click="logout()" class="drawer-items">
+                <span class="material-icons"> logout </span>
+                <span>Logout</span>
+              </a></v-list-item-title
+            >
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
+
+    <!-- Main Content -->
+    <v-main>
+      <router-view />
+    </v-main>
+
+    <!-- Alert SnackBar -->
+    <v-alert
+      border="bottom"
+      v-show="isShowSnackBar"
+      type="success"
+      transition="fade-transition"
+      >{{ snackBarMessage }}</v-alert
+    >
+  </v-app>
 </template>
 
 <script>
-export default {};
+import Auth from "@/apis/auth.js";
+export default {
+  name: "App",
+  computed: {
+    isLoading() {
+      return this.$store.getters.getIsLoading;
+    },
+    isShowSnackBar() {
+      return this.$store.getters.getSnackBar.show;
+    },
+    snackBarMessage() {
+      return this.$store.getters.getSnackBar.message;
+    },
+    cartStatus() {
+      return this.$store.getters.getCartStatus;
+    },
+    routeName() {
+      let word = this.$route.name.split("_");
+      word.forEach((w) => {
+        let temp = w;
+        w.charAt(0).toUpperCase() + temp.slice(1);
+      });
+      return word.join(" ");
+    },
+  },
+  data() {
+    return {
+      search: "",
+      drawer: false,
+      group: null,
+    };
+  },
+  watch: {
+    search: function () {
+      this.$store.commit("setSearchInput", this.search);
+    },
+    group: function () {
+      this.drawer = false;
+    },
+  },
+  methods: {
+    showCart() {
+      this.$router.push({ name: "cart" });
+    },
+    async logout() {
+      this.$store.commit("setIsLoading", true);
+      let res = await Auth.logout();
+      if (res.valid) {
+        this.$store.commit("setIsLoading", false);
+        this.$router.replace({ name: "login" });
+      } else {
+        alert(res.res);
+      }
+    },
+  },
+};
 </script>
 
 <style>
 :root {
-  --primary: #0f0326;
-  --secondary: #41453e;
   --accent: #e2e2e2;
   --danger: #ff3030;
   --icon-small: 6px;
   --icon-medium: 12px;
   --icon-large: 24px;
-  --bg: #0f0326;
   --bg-body: white;
 }
 
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-button {
-  border: none;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
 #app {
-  font-family: "Passion One", cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
 }
 
 .material-icons {
   cursor: pointer !important;
 }
 
-.primary-btn {
-  padding: 0.5rem;
-  background: var(--primary);
-  color: white;
-  margin: 0.5rem 0rem;
+/* Drawer */
+.drawer-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
   width: 100%;
 }
 
-.primary-btn > *,
-.secondary-btn > *,
-.danger-btn > * {
-  color: white;
+.brand {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 1rem;
 }
 
-.secondary-btn {
-  padding: 0.5rem;
-  background: var(--secondary);
-  color: white;
-  margin: 0.5rem 0rem;
+.brand > img {
+  margin-right: 1rem;
+  width: 40px;
+  height: 40px;
+}
+
+.drawer-items > span {
+  margin: 0rem 1rem;
+}
+
+/* App bar */
+.menu-route-container,
+.search-cart-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.search-cart-container {
+  justify-content: space-between;
   width: 100%;
 }
 
-.danger-btn {
-  padding: 0.5rem;
-  background: var(--danger);
-  color: white;
-  margin: 0.5rem 0rem;
-  width: 100%;
+.cart-icon-container {
+  margin: 1rem;
 }
 
-.outline-btn {
-  padding: 0.5rem;
-  background: white;
+.cart-status {
+  font-size: var(--icon-medium);
+  border-radius: 50%;
+  padding: 2px;
+  position: relative;
+  left: 10px;
+  top: 10px;
   color: var(--primary);
-  margin: 0.5rem 0rem;
-  border-radius: 2rem;
-  border: 1px solid var(--primary);
+  text-align: center;
+  font-weight: bold;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
+.cart {
+  color: orange;
 }
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+@media only screen and (min-width: 600px) {
+  /* For tablet: */
+  .view-product-info,
+  .edit-product-info {
+    width: 80%;
+    background: white;
+  }
 
-* {
-  font-family: "Poppins", sans-serif;
-  box-sizing: border-box;
-  text-decoration: none;
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+  .view-product-picture,
+  .edit-product-picture {
+    max-height: 500px;
+  }
+}
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  .view-product-info,
+  .edit-product-info {
+    width: 30%;
+  }
+  .edit-save-btn,
+  .edit-discard-btn {
+    width: 30%;
+  }
+
+  .confirmation-prompt {
+    width: 50%;
+  }
+
+  .edit-product-container,
+  .view-product-container {
+    width: 50%;
+  }
+}
+@media only screen and (min-width: 1440px) {
+  /* For desktop: */
+  .edit-save-btn,
+  .edit-discard-btn {
+    width: 20%;
+  }
+
+  .edit-product-container,
+  .view-product-container {
+    width: 30%;
+  }
 }
 </style>

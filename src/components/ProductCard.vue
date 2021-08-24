@@ -1,29 +1,38 @@
 <template>
-  <div class="card-container">
-    <div class="product-picture-container">
-      <img
-        :src="productInfo.picUrl"
-        v-if="productInfo.picUrl != ''"
-        class="product-picture"
-      />
-      <img src="../assets/no-image.svg" v-else class="product-picture" />
-    </div>
-    <div class="product-info">
-      <div class="product-name">
-        <h4>{{ productInfo.name }}</h4>
+  <v-lazy
+    v-model="isActive"
+    :options="{
+      threshold: 0.5,
+    }"
+    min-height="200"
+    transition="fade-transition"
+  >
+    <div class="card-container">
+      <div class="product-picture-container">
+        <img
+          :src="productInfo.picUrl"
+          v-if="productInfo.picUrl != ''"
+          class="product-picture"
+        />
+        <img src="../assets/no-image.svg" v-else class="product-picture" />
       </div>
-      <div class="product-price">
-        <div class="intake-price">
-          Buy:
-          {{ this.formatCurrency(productInfo.intakePrice) }}
+      <div class="product-info">
+        <div class="product-name">
+          <h4>{{ productInfo.name }}</h4>
         </div>
-        <div class="selling-price">
-          Sell:
-          {{ this.formatCurrency(productInfo.sellingPrice) }}
+        <div class="product-price">
+          <div class="intake-price">
+            Cost
+            {{ this.formatCurrency(productInfo.intakePrice) }}
+          </div>
+          <div class="selling-price">
+            S.P.
+            {{ this.formatCurrency(productInfo.sellingPrice) }}
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </v-lazy>
 </template>
 
 <script>
@@ -38,8 +47,13 @@ export default {
   },
   methods: {
     formatCurrency(amount) {
-      return `RM${parseFloat(amount).toFixed(2)}/kg`;
+      return `RM${parseFloat(amount).toFixed(2)}`;
     },
+  },
+  data() {
+    return {
+      isActive: false,
+    };
   },
 };
 </script>
@@ -50,34 +64,34 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background: var(--primary);
-  border-radius: 1rem;
-  margin: 1rem 0rem;
+  background: var(--accent);
+  border-radius: 0.5rem;
   width: 100%;
-  height: 35vh;
+  height: 30vh;
 }
 
 .product-picture-container {
   width: 100%;
-  height: 60%;
+  min-height: 60%;
+  max-height: 60%;
 }
 
 .product-picture {
   height: 100%;
   width: 100%;
-  border-radius: 1rem 1rem 0rem 0rem;
+  border-radius: 0.5rem 0.5rem 0rem 0rem;
   object-fit: cover;
 }
 
 .product-info {
-  min-width: 100%;
-  height: 30%;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
   padding: 0.5rem;
-  margin: 0.5rem 0rem;
+  min-width: 100%;
+  max-height: 40%;
+  min-height: 40%;
 }
 
 .product-price {
@@ -85,19 +99,16 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  width: 50%;
-  margin: 0rem 1rem;
 }
 
 .product-name {
-  color: white;
   text-align: center;
   flex: 1;
+  font-size: 0.8rem;
 }
 
 .intake-price,
 .selling-price {
-  color: white;
   text-align: left;
   font-size: 0.8rem;
 }

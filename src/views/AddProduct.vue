@@ -1,74 +1,68 @@
 <template>
   <div class="add-product-container">
-    <section>
-      <div class="image-upload" v-if="image == ''">
-        <div class="image-upload-label">
-          Upload an image<br />or take a photo
-        </div>
-        <input
-          type="file"
-          id="product-image-upload"
-          name="img"
-          accept="image/*"
-          @change="onFileChange"
-        />
+    <div class="image-upload" v-if="image == ''">
+      <div class="image-upload-label">Upload an image<br />or take a photo</div>
+      <input
+        type="file"
+        id="product-image-upload"
+        name="img"
+        accept="image/*"
+        @change="onFileChange"
+      />
+    </div>
+    <div v-else class="preview-image-container">
+      <img :src="previewImage" class="preview-image" />
+      <v-progress-linear
+        v-if="progress != ''"
+        color="primary"
+        height="25"
+        :buffer-value="100 - formatProgress"
+        :value="formatProgress"
+        stream
+        ><strong>{{ formatProgress }}%</strong></v-progress-linear
+      >
+      <v-btn @click="removeImage" class="remove-image-btn">
+        <span class="material-icons"> highlight_off </span>
+      </v-btn>
+    </div>
+    <v-form class="add-product-info">
+      <v-text-field
+        type="text"
+        v-model="name"
+        label="Product Name"
+        class="add-product-name-field"
+        :rules="[rules.required]"
+      />
+      <v-text-field
+        type="number"
+        label="Cost/kg"
+        prefix="RM"
+        v-model="intakePrice"
+        class="add-product-price-field"
+        :rules="[rules.required]"
+      />
+      <v-text-field
+        label="Selling Price/kg"
+        type="number"
+        prefix="RM"
+        v-model="sellingPrice"
+        class="add-product-price-field"
+        :rules="[rules.required]"
+      />
+      <div class="profit">
+        <span>Profit:</span>
+        <span> {{ calculateProfit }} </span>
       </div>
-      <div v-else class="preview-image-container">
-        <img :src="previewImage" class="preview-image" />
-        <h4 v-if="progress != ''">{{ Math.round(progress) }}%</h4>
-        <button @click="removeImage" class="remove-image-btn">
-          <span class="material-icons"> highlight_off </span>
-        </button>
+
+      <div class="add-product-actions">
+        <v-btn color="primary" @click="addProductPipeline()">
+          <h5>Save</h5>
+        </v-btn>
+        <v-btn color="danger" @click="closeDialog()">
+          <h5>Discard</h5>
+        </v-btn>
       </div>
-      <section class="add-product-info">
-        <div class="add-product-info-row">
-          <h6>Product Name</h6>
-          <div class="add-product-name">
-            <input type="text" v-model="name" class="add-product-name-field" />
-          </div>
-        </div>
-        <div class="add-product-info-row">
-          <h6>Intake Price</h6>
-          <div class="add-product-price">
-            <small>RM</small>
-            <input
-              type="number"
-              v-model="intakePrice"
-              class="add-product-price-field"
-            />
-            <small>/kg</small>
-          </div>
-        </div>
-
-        <div class="add-product-info-row">
-          <h6>Selling Price</h6>
-          <div class="add-product-price">
-            <small>RM</small>
-            <input
-              type="number"
-              v-model="sellingPrice"
-              class="add-product-price-field"
-            />
-            <small>/kg</small>
-          </div>
-        </div>
-
-        <div class="add-product-info-row">
-          <h6>Profit:</h6>
-          <div class="profit">
-            <small>
-              {{ calculateProfit }}
-            </small>
-          </div>
-        </div>
-      </section>
-      <button class="primary-btn" @click="addProductPipeline()">
-        <h5>Save</h5>
-      </button>
-      <button class="danger-btn" @click="closeDialog()">
-        <h5>Discard</h5>
-      </button>
-    </section>
+    </v-form>
   </div>
 </template>
 
@@ -86,6 +80,9 @@ export default {
       image: "",
       progress: "",
       previewImage: "",
+      rules: {
+        required: (value) => !!value || "Required.",
+      },
     };
   },
   computed: {
@@ -99,6 +96,9 @@ export default {
     },
     isLoading() {
       return this.$store.getters.getIsLoading;
+    },
+    formatProgress() {
+      return Math.ceil(this.progress);
     },
   },
   methods: {
@@ -116,7 +116,11 @@ export default {
     async addProductPipeline() {
       if (this.validateForm()) {
         this.$store.commit("setIsLoading", true);
-        this.uploadPic();
+        if (this.image != "") {
+          this.uploadPic();
+        } else {
+          this.addProduct();
+        }
       } else {
         alert(
           "1. Only accept numbers for intake or selling price. \n2. Product name cannot be empty."
@@ -184,7 +188,7 @@ export default {
         }
       );
     },
-    async addProduct(url) {
+    async addProduct(url = "") {
       let res = await Product.addProduct({
         picUrl: url,
         name: this.name,
@@ -205,6 +209,7 @@ export default {
 </script>
 
 <style>
+/* Product Image */
 .remove-image-btn {
   padding: 1rem;
   margin: 0.5rem 0rem;
@@ -221,10 +226,12 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 1rem;
+  min-width: 100%;
 }
 
 .preview-image {
   max-height: 30vh;
+  max-width: 100%;
   width: auto;
   border-radius: 1rem;
 }
@@ -234,13 +241,14 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
+  width: 100%;
 }
 
 .image-upload-label {
   position: absolute;
   font-size: 1.3rem;
-  width: 90%;
+  padding: 1rem;
   background: var(--accent);
   height: 200px;
   display: flex;
@@ -248,114 +256,68 @@ export default {
   align-items: center;
   border-radius: 1rem;
   text-align: center;
-  margin-bottom: 1rem;
+  width: 90%;
 }
 
 #product-image-upload {
   opacity: 0;
   padding: 2rem;
   height: 200px;
-  width: 100%;
+  width: 90%;
 }
 
-.add-product-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
-  padding: 1rem;
-}
-
-.add-product-container > section {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-
+/* Add Product Form */
 .add-product-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   margin: 1rem 0rem;
 }
 
-.add-product-info-row {
+.add-product-info > div {
+  width: 90%;
+}
+
+/* Add Product Actions Button */
+.add-product-actions {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  width: 100%;
-  margin: 0.3rem 0rem;
-}
-
-.add-product-info-row > h7 {
-  width: 50%;
-}
-
-.add-product-name,
-.profit,
-.add-product-price {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.add-product-price-field,
-.add-product-name-field {
-  border: 1px solid var(--primary);
-  padding: 0.5rem;
-  color: var(--primary);
-  font-weight: bold;
   width: 90%;
-  margin: 0rem 0.5rem;
+  margin: 2rem 0rem;
 }
 
-.add-product-price-field::placeholder,
-.add-product-price-field::-moz-placeholder,
-.add-product-price-field::-ms-placeholder,
-.add-product-name-field::placeholder,
-.add-product-name-field::-moz-placeholder,
-.add-product-name-field::-ms-placeholder {
-  color: var(--primary);
-  font-weight: bold;
-}
-
-.add-save-btn,
-.add-discard-btn {
-  width: 90%;
-  color: white;
-  margin: 0.5rem 0rem;
-  padding: 0.5rem;
-  border-radius: 1rem;
-}
-
-@media only screen and (min-width: 600px) {
-  /* For tablet: */
-  .image-upload-label,
-  .add-product-form-container {
+@media only screen and (min-width: 1024px) {
+  .add-product-info > div {
     width: 50%;
   }
 
-  .add-product-container > section {
-    width: 60%;
+  .image-upload {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+    width: 100%;
   }
-}
-@media only screen and (min-width: 1440px) {
-  /* For tablet: */
-  .image-upload-label,
-  .add-product-form-container {
+
+  .preview-image-container {
     width: 50%;
   }
 
-  .add-save-btn,
-  .add-discard-btn {
-    width: 20%;
+  .image-upload-label {
+    width: 50%;
+  }
+
+  #product-image-upload {
+    width: 50%;
+  }
+
+  .add-product-actions {
+    width: 50%;
   }
 }
 </style>

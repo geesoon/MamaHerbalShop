@@ -1,27 +1,43 @@
 <template>
   <div class="login-page">
-    <section class="login-container">
-      <div class="title"><h1>Mama's Herbal</h1></div>
-      <div class="login-form">
-        Email
-        <input
-          type="text"
-          placeholder="username"
-          class="login-input"
-          v-model="username"
-        />
-        Password
-        <input
-          type="password"
-          placeholder="password"
-          class="login-input"
-          v-model="password"
-        />
-        <button class="login-btn" @click="login()">
-          <h4>{{ status }}</h4>
-        </button>
-      </div>
-    </section>
+    <v-container class="login-container">
+      <v-row>
+        <v-col align="center">
+          <img
+            src="../assets/logo/android-chrome-512x512.png"
+            alt="logo"
+            class="login-logo"
+          />
+          <v-form class="login-form">
+            <v-text-field
+              placeholder="username"
+              v-model="username"
+              label="Email"
+              :rules="[rules.required]"
+              clearable
+            />
+            <v-text-field
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :rules="[rules.required, rules.min]"
+              :type="showPassword ? 'text' : 'password'"
+              label="Password"
+              hint="At least 8 characters"
+              @click:append="showPassword = !showPassword"
+              v-model="password"
+            ></v-text-field>
+            <v-btn class="login-btn" @click="login()" v-if="!isLogging">
+              <h4>Log In</h4>
+            </v-btn>
+            <v-btn class="login-btn" loading v-else> </v-btn>
+          </v-form>
+          <div class="errorMessage" v-if="errorMessage != ''">
+            <small>
+              {{ errorMessage }}
+            </small>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -33,30 +49,47 @@ export default {
     return {
       username: "",
       password: "",
-      status: "Login",
+      isLogging: false,
+      rules: {
+        required: (value) => !!value || "Required.",
+        min: (v) => v.length >= 8 || "Min 8 characters",
+        emailMatch: () => `The email and password you entered don't match`,
+      },
+      showPassword: false,
+      errorMessage: "",
     };
   },
   methods: {
     async login() {
-      this.status = "Logging in...";
+      this.errorMessage = "";
+      this.isLogging = true;
       this.$store.commit("setIsLoading", true);
-      let res = await Auth.login(this.username, this.password);
-      if (res.valid) {
-        this.$router.replace({ name: "catalogue" });
-      } else {
-        this.$store.commit("setSnackBar", res.res);
-      }
-      this.$store.commit("setIsLoading", false);
-      this.status = "Login";
+
+      await Auth.login(this.username, this.password).then((res) => {
+        if (res.valid) {
+          this.$router.replace({ name: "catalogue" });
+        } else {
+          this.errorMessage = res.res;
+          this.isLogging = false;
+        }
+        this.$store.commit("setIsLoading", false);
+      });
     },
   },
 };
 </script>
 
 <style>
+.login-logo {
+  max-width: 80%;
+  height: auto;
+}
+
 .login-page {
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;
+  max-height: 100vh;
+  min-width: 100vw;
+  max-width: 100vw;
   background: #f3f5f7;
   display: flex;
   flex-direction: row;
@@ -79,17 +112,13 @@ export default {
 
 .login-form {
   margin: 2rem 0rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
+  text-align: center;
 }
 
 .login-input {
   padding: 1rem;
   margin: 0.5rem 0rem;
   width: 100%;
-  border: 2px solid var(--primary);
   color: var(--primary);
 }
 
@@ -98,6 +127,11 @@ export default {
 .login-input::-ms-input-placeholder {
   text-align: center;
   font-weight: bold;
+}
+
+.errorMessage {
+  width: 100%;
+  font-size: 0.5rem;
 }
 
 .login-btn {
@@ -109,11 +143,11 @@ export default {
 
 @media only screen and (min-width: 768px) {
   .login-container {
-    width: 30%;
+    width: 90%;
   }
 
-  .login-page {
-    background: none;
+  .login-logo {
+    max-width: 60%;
   }
 }
 </style>
