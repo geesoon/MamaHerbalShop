@@ -10,7 +10,6 @@
         :productInfo="product"
         v-for="(product, key) in products"
         :key="key"
-        @click.native="showViewProduct(product)"
       />
     </div>
 
@@ -62,9 +61,6 @@ export default {
   methods: {
     updateSearch(search) {
       this.search = search;
-    },
-    showViewProduct(product) {
-      this.$router.push({ name: "view_product", query: { id: product.id } });
     },
     showAddProduct() {
       this.$router.push({ name: "add_product" });

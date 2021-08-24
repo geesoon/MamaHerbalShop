@@ -21,7 +21,7 @@
         stream
         ><strong>{{ formatProgress }}%</strong></v-progress-linear
       >
-      <v-btn @click="removeImage" class="remove-image-btn">
+      <v-btn icon @click="removeImage" class="remove-image-btn">
         <span class="material-icons"> highlight_off </span>
       </v-btn>
     </div>

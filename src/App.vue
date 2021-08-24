@@ -100,9 +100,10 @@
     <v-main>
       <router-view />
     </v-main>
-
     <!-- Alert SnackBar -->
     <v-alert
+      class="snackbar"
+      dismissible
       border="bottom"
       v-show="isShowSnackBar"
       type="success"
@@ -192,6 +193,12 @@ a {
 
 .material-icons {
   cursor: pointer !important;
+}
+
+.snackbar {
+  position: absolute;
+  bottom: 4%;
+  z-index: 999;
 }
 
 /* Drawer */

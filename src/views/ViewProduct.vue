@@ -1,6 +1,6 @@
 <template>
   <div class="view-product-container" v-if="!isLoading">
-    <v-card class="view-product-info">
+    <div class="view-product-info">
       <div class="view-image-container">
         <img
           v-if="productInfo.picture != ''"
@@ -10,10 +10,15 @@
         />
         <img v-else src="@/assets/no-image.svg" class="view-product-picture" />
       </div>
-      <v-card-title>
-        {{ productInfo.name }}
-      </v-card-title>
-      <v-card-text>
+      <div>
+        <v-btn icon @click="showEditProduct()" color="primary"
+          ><v-icon>mdi-pencil-circle</v-icon></v-btn
+        >
+      </div>
+      <div class="view-product-description">
+        <div class="product-title">
+          {{ productInfo.name }}
+        </div>
         <div class="view-product-info-row">
           <div>Cost:</div>
           {{ formatPrice(productInfo.intakePrice) }}
@@ -26,29 +31,16 @@
           <div>Profit:</div>
           {{ calculateProfit }}
         </div>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn @click="showEditProduct()" color="primary">Edit</v-btn>
-        <v-btn @click="toggleAddToCartDialog()" color="secondary">
-          Add To Cart
-        </v-btn>
-      </v-card-actions>
+      </div>
 
-      <v-bottom-sheet v-model="isAddToCartDialog" inset>
-        <v-sheet height="40vh">
-          <AddToCartDialog
-            @toggleDialog="toggleAddToCartDialog()"
-            :productInfo="productInfo"
-          />
-        </v-sheet>
-      </v-bottom-sheet>
-    </v-card>
+      <AddToCart :productInfo="productInfo" />
+    </div>
   </div>
 </template>
 
 <script>
 import Product from "@/apis/products.js";
-import AddToCartDialog from "@/components/AddToCartDialog.vue";
+import AddToCart from "@/components/AddToCartPanel.vue";
 
 export default {
   data: () => {
@@ -64,7 +56,7 @@ export default {
     };
   },
   components: {
-    AddToCartDialog,
+    AddToCart,
   },
   computed: {
     calculateProfit() {
@@ -108,12 +100,20 @@ export default {
 </script>
 
 <style>
+.product-title {
+  font-size: 1.5rem;
+  margin: 0.5rem 0rem;
+}
+.view-product-description {
+  width: 100%;
+}
+
 .view-product-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   width: 100%;
 }
 
@@ -128,15 +128,20 @@ export default {
 .view-product-picture {
   max-width: 100%;
   object-fit: cover;
-  max-height: 30vh;
+  max-height: 25vh;
 }
 
+.add-to-cart-container,
 .view-product-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
+}
+
+.add-to-cart-container {
+  margin-top: 1rem;
 }
 
 .view-image-container {

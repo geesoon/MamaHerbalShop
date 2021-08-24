@@ -28,7 +28,7 @@
             <v-btn class="login-btn" @click="login()" v-if="!isLogging">
               <h4>Log In</h4>
             </v-btn>
-            <v-btn class="login-btn" loading v-else> </v-btn>
+            <v-btn icon class="login-btn" loading v-else> </v-btn>
           </v-form>
           <div class="errorMessage" v-if="errorMessage != ''">
             <small>
@@ -113,6 +113,7 @@ export default {
 .login-form {
   margin: 2rem 0rem;
   text-align: center;
+  width: 80%;
 }
 
 .login-input {

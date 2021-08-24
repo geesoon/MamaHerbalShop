@@ -1,5 +1,6 @@
 <template>
-  <div class="cart-container" v-if="!isLoading && this.items.length != 0">
+  <Loader v-if="isLoading" />
+  <div class="cart-container" v-else-if="!isLoading && this.items.length != 0">
     <div class="cart-item-list">
       <CartItem v-for="(item, key) in items" :item="item" :key="key" />
     </div>
@@ -78,7 +79,7 @@
       <br />
       <span>Nothing in the cart.</span>
     </div>
-    <section class="cart-actions">
+    <section class="no-item-cart-actions">
       <v-btn outlined>
         <router-link to="/product">Continue Adding</router-link>
       </v-btn>
@@ -91,6 +92,7 @@
 </template>
 
 <script>
+import Loader from "@/components/Loading.vue";
 import CartSoldToDialog from "@/components/CartSoldToDialog.vue";
 import CartSoldDateDialog from "@/components/CartSoldDateDialog.vue";
 import CartItem from "@/components/CartItem.vue";
@@ -101,6 +103,7 @@ export default {
     CartItem,
     CartSoldToDialog,
     CartSoldDateDialog,
+    Loader,
   },
   data() {
     return {
@@ -109,15 +112,12 @@ export default {
       soldTo: "",
       showCartSoldToDialog: false,
       showCartSoldDateDialog: false,
+      isLoading: true,
     };
   },
   computed: {
-    isLoading() {
-      return this.$store.getters.getIsLoading;
-    },
     formattedDate() {
       return this.soldDate;
-      // return `${this.soldDate.getDate()}/${this.soldDate.getMonth()}/${this.soldDate.getFullYear()}`;
     },
   },
   methods: {
@@ -131,19 +131,21 @@ export default {
       this.soldDate = value;
     },
     async getItems() {
+      this.isLoading = true;
       let cart = this.$store.getters.getCartItem;
       if (cart.length != 0) {
-        this.$store.commit("setIsLoading", true);
-        let res = await Product.getProductsByIds(cart);
-        if (res.valid) {
-          this.items = res.res;
-          this.$store.commit("setIsLoading", false);
-        } else {
-          this.$store.commit("setIsLoading", false);
-          this.$store.commit("setSnackBar", res.res);
-        }
+        Product.getProductsByIds(cart).then((res) => {
+          if (res.valid) {
+            this.items = res.res;
+            this.isLoading = false;
+          } else {
+            this.isLoading = false;
+            this.$store.commit("setSnackBar", res.res);
+          }
+        });
       } else {
         this.resetItems();
+        this.isLoading = false;
       }
     },
     resetItems() {
@@ -207,9 +209,14 @@ export default {
 </script>
 
 <style>
-.cart-actions > button {
+.no-item-cart-actions > button {
   width: 80%;
   margin: 1rem 0rem;
+}
+
+.cart-actions > button {
+  width: 100%;
+  margin: 0.5rem 0rem;
 }
 
 .cart-actions {

@@ -2,15 +2,19 @@
   <section class="add-cart-dialog">
     <div class="add-cart-dialog-body">
       <div class="add-cart-selection-container">
-        <v-slider
-          v-model="quantity"
-          step="100"
-          min="0"
-          max="10000"
-          ticks
-          label="Quantity(g)"
-          thumb-label="always"
-        ></v-slider>
+        <div class="add-cart-selections">
+          <div>
+            <v-btn icon color="primary" @click="reduceQuantity">
+              <v-icon>mdi-minus-box</v-icon>
+            </v-btn>
+          </div>
+          <div>{{ quantity }}g</div>
+          <div>
+            <v-btn icon color="primary" @click="addQuantity">
+              <v-icon>mdi-plus-box</v-icon>
+            </v-btn>
+          </div>
+        </div>
         <div class="add-cart-selections">
           <h4>Cost:</h4>
           <span>RM{{ calculateCost }}</span>
@@ -65,23 +69,30 @@ export default {
     },
   },
   methods: {
-    toggleAddToCartDialog() {
-      this.$emit("toggleDialog");
+    addQuantity() {
+      this.quantity += 100;
+      this.addToCart();
+    },
+    reduceQuantity() {
+      if (this.quantity >= 100) {
+        this.quantity -= 100;
+        this.addToCart();
+      }
     },
     addToCart() {
-      let item = [
-        {
-          quantity: this.quantity,
-          id: this.productInfo.id,
-        },
-      ];
+      let item = {
+        quantity: this.quantity,
+        id: this.productInfo.id,
+      };
       this.$store.commit("addToCart", item);
-      this.$store.commit(
-        "setSnackBar",
-        `Added ${this.productInfo.name} to cart.`
-      );
-      this.toggleAddToCartDialog();
     },
+  },
+  created() {
+    this.$store.getters.getCartItem.map((cartItem) => {
+      if (cartItem.id === this.productInfo.id) {
+        this.quantity = cartItem.quantity;
+      }
+    });
   },
 };
 </script>
@@ -92,13 +103,11 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
   width: 100%;
 }
 
 .add-cart-dialog-body {
   width: 100%;
-  margin-top: 1rem;
 }
 
 .cart-product-picture {

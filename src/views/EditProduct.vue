@@ -41,7 +41,7 @@
       <v-btn color="secondary" @click="closeDialog()">Discard</v-btn>
       <v-dialog v-model="dialog" persistent max-width="400">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn class="remove-product-btn" v-bind="attrs" v-on="on">
+          <v-btn icon class="remove-product-btn" v-bind="attrs" v-on="on">
             <span class="material-icons"> delete </span>
           </v-btn>
         </template>
@@ -149,12 +149,12 @@ export default {
   max-width: 100%;
   max-height: 35vh;
   height: auto;
-  margin: 1rem;
 }
 
 .edit-product-info {
   width: 100%;
-  margin: 2rem 0rem;
+  padding: 0rem 1rem;
+  margin: 1rem 0rem;
 }
 
 .edit-product-actions {
