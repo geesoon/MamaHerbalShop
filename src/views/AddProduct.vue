@@ -14,7 +14,7 @@
         />
       </div>
       <div v-else class="preview-image-container">
-        <img :src="image" class="preview-image" />
+        <img :src="previewImage" class="preview-image" />
         <h4 v-if="progress != ''">{{ Math.round(progress) }}%</h4>
         <button @click="removeImage" class="remove-image-btn">
           <span class="material-icons"> highlight_off </span>
@@ -30,7 +30,7 @@
         <div class="add-product-info-row">
           <h6>Intake Price</h6>
           <div class="add-product-price">
-            <div>RM</div>
+            <small>RM</small>
             <input
               type="number"
               v-model="intakePrice"
@@ -43,7 +43,7 @@
         <div class="add-product-info-row">
           <h6>Selling Price</h6>
           <div class="add-product-price">
-            <div>RM</div>
+            <small>RM</small>
             <input
               type="number"
               v-model="sellingPrice"
@@ -56,7 +56,9 @@
         <div class="add-product-info-row">
           <h6>Profit:</h6>
           <div class="profit">
-            {{ calculateProfit }}
+            <small>
+              {{ calculateProfit }}
+            </small>
           </div>
         </div>
       </section>
@@ -73,6 +75,7 @@
 <script>
 import Product from "@/apis/products.js";
 import firebase from "firebase";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   data: () => {
@@ -82,6 +85,7 @@ export default {
       sellingPrice: "",
       image: "",
       progress: "",
+      previewImage: "",
     };
   },
   computed: {
@@ -103,9 +107,11 @@ export default {
     },
     onFileChange(e) {
       this.image = e.target.files[0];
+      this.previewImage = URL.createObjectURL(this.image);
     },
     removeImage() {
       this.image = "";
+      this.previewImage = "";
     },
     async addProductPipeline() {
       if (this.validateForm()) {
@@ -138,8 +144,10 @@ export default {
       };
       var storage = firebase.storage();
       var storageRef = storage.ref();
+      var uuid = uuidv4();
+
       var uploadTask = storageRef
-        .child("productPic/" + this.name)
+        .child("productPic/" + uuid)
         .put(this.image, metadata);
       uploadTask.on(
         "state_changed",
@@ -216,7 +224,8 @@ export default {
 }
 
 .preview-image {
-  max-width: 50%;
+  max-height: 30vh;
+  width: auto;
   border-radius: 1rem;
 }
 

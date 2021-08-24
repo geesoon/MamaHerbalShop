@@ -1,5 +1,5 @@
 <template>
-  <div class="overlay">
+  <div class="lds-container">
     <div class="lds-roller">
       <div></div>
       <div></div>
@@ -25,19 +25,16 @@ export default {
 </script>
 
 <style>
-.overlay {
+.lds-container {
+  top: 0px;
+  left: 0px;
   position: fixed;
-  width: 100%;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  z-index: 999;
-  background: var(--accent);
-  opacity: 0.9;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-width: 100vw;
+  min-height: 100vh;
 }
 
 .lds-roller {
@@ -57,7 +54,7 @@ export default {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--primary);
   margin: -4px 0 0 -4px;
 }
 .lds-roller div:nth-child(1) {

@@ -1,20 +1,20 @@
 <template>
   <div class="history-item-container">
     <div class="history-sold-to">
-      <h5>{{ history.soldTo == "" ? "None" : history.soldTo }}</h5>
+      <h5>Sold To: {{ history.soldTo == "" ? "None" : history.soldTo }}</h5>
     </div>
     <div class="history-sold-date">
-      <h5>{{ history.date }}</h5>
+      <h5>Sold Date: {{ history.date }}</h5>
     </div>
     <div class="history-detail-row">
       <div class="history-items">
         <small
-          ><strong>{{ showHistoryItems }}</strong></small
+          ><strong>Item Sold: {{ showHistoryItems }}</strong></small
         >
       </div>
       <div class="history-order-total">
         <small
-          ><strong>Order Total: RM{{ history.totalPrice }}</strong></small
+          ><strong>Total: RM{{ history.totalPrice }}</strong></small
         >
       </div>
     </div>
@@ -57,10 +57,13 @@ export default {
 }
 
 .history-items {
-  width: 65%;
+  max-width: 70%;
+  min-width: 70%;
 }
 
 .history-order-total {
-  width: 30%;
+  max-width: 30%;
+  min-width: 30%;
+  text-align: right;
 }
 </style>

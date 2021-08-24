@@ -5,9 +5,9 @@
       <div class="add-cart-dialog-header">
         <div class="add-cart-product-pic">
           <img
-            v-if="productInfo.picture != ''"
+            v-if="productInfo.picUrl != ''"
             class="cart-product-picture"
-            :src="productInfo.picture"
+            :src="productInfo.picUrl"
             :alt="productInfo.name"
           />
           <img
@@ -128,7 +128,7 @@ export default {
   width: 100%;
   background: whitesmoke;
   z-index: 3;
-  padding: 1rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -200,6 +200,10 @@ export default {
 
 .add-cart-dialog-action > button {
   width: 100%;
+}
+
+.add-cart-dialog-body {
+  width: 90%;
 }
 
 @media only screen and (min-width: 600px) {

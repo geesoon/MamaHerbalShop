@@ -17,8 +17,8 @@ export default {
 #snackbar {
   min-width: 250px; /* Set a default minimum width */
   margin-left: -125px; /* Divide value of min-width by 2 */
-  background-color: var(--primary); /* Black background color */
-  color: #fff; /* White text color */
+  background-color: var(--accent); /* Black background color */
+  color: black; /* White text color */
   text-align: center; /* Centered text */
   border-radius: 0.5rem; /* Rounded borders */
   padding: 0.5rem; /* Padding */

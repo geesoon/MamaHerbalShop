@@ -18,12 +18,9 @@ const routes = [
         path: "product",
         name: "catalogue",
         component: () => import("../views/Catalogue.vue"),
-        meta: {
-          authRequired: true,
-        },
       },
       {
-        path: "view",
+        path: "/product/view",
         name: "viewProduct",
         component: () => import("../views/ViewProduct.vue"),
         meta: {
@@ -31,7 +28,7 @@ const routes = [
         },
       },
       {
-        path: "edit",
+        path: "/product/edit",
         name: "editProduct",
         component: () => import("../views/EditProduct.vue"),
         meta: {
@@ -39,7 +36,7 @@ const routes = [
         },
       },
       {
-        path: "addProduct",
+        path: "/product/add",
         name: "addProduct",
         component: () => import("../views/AddProduct.vue"),
         meta: {

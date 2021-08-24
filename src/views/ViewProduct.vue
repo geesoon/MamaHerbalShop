@@ -1,33 +1,39 @@
 <template>
   <div class="view-product-container" v-if="!isLoading">
     <section class="view-product-info">
-      <img
-        v-if="productInfo.picture != ''"
-        class="view-product-picture"
-        :src="productInfo.picUrl"
-        :alt="productInfo.name"
-      />
-      <img v-else src="../assets/no-image.svg" class="view-product-picture" />
-      <div class="view-product-info-row">
-        <div>Product Name:</div>
-        {{ productInfo.name }}
+      <div class="view-image-container">
+        <img
+          v-if="productInfo.picture != ''"
+          class="view-product-picture"
+          :src="productInfo.picUrl"
+          :alt="productInfo.name"
+        />
+        <img v-else src="../assets/no-image.svg" class="view-product-picture" />
       </div>
-      <div class="view-product-info-row">
-        <div>Intake Price:</div>
-        {{ formatPrice(productInfo.intakePrice) }}
+      <div class="view-product-info-container">
+        <div class="view-product-info-row">
+          <div>Product Name:</div>
+          {{ productInfo.name }}
+        </div>
+        <div class="view-product-info-row">
+          <div>Intake Price:</div>
+          {{ formatPrice(productInfo.intakePrice) }}
+        </div>
+        <div class="view-product-info-row">
+          <div>Selling Price:</div>
+          {{ formatPrice(productInfo.sellingPrice) }}
+        </div>
+        <div class="view-product-info-row">
+          <div>Profit:</div>
+          {{ calculateProfit }}
+        </div>
+        <div>
+          <button @click="showEditProduct()" class="secondary-btn">Edit</button>
+          <button @click="toggleAddToCartDialog()" class="primary-btn">
+            Add To Cart
+          </button>
+        </div>
       </div>
-      <div class="view-product-info-row">
-        <div>Selling Price:</div>
-        {{ formatPrice(productInfo.sellingPrice) }}
-      </div>
-      <div class="view-product-info-row">
-        <div>Profit:</div>
-        {{ calculateProfit }}
-      </div>
-      <button @click="showEditProduct()" class="secondary-btn">Edit</button>
-      <button @click="toggleAddToCartDialog()" class="primary-btn">
-        Add To Cart
-      </button>
       <AddToCartDialog
         @toggleDialog="toggleAddToCartDialog()"
         :productInfo="productInfo"
@@ -116,17 +122,9 @@ export default {
   width: 100%;
 }
 
-.view-product-container > section {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 .view-product-picture {
-  max-width: 80%;
-  height: auto;
-  margin: 1rem;
+  max-width: 100%;
+  object-fit: cover;
 }
 
 .view-product-info {
@@ -140,9 +138,28 @@ export default {
   background: white;
 }
 
-@media only screen and (min-width: 600px) {
-  .view-product-container > section {
-    max-width: 60%;
+.view-product-info-container,
+.view-image-container {
+  width: 100%;
+  text-align: center;
+}
+
+@media only screen and (min-width: 768px) {
+  .view-product-info {
+    max-width: 80%;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .view-product-info {
+    max-width: 100%;
+  }
+  .view-image-container {
+    max-width: 30%;
+  }
+  .view-product-info-container {
+    max-width: 70%;
+    text-align: center;
   }
 }
 </style>

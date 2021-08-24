@@ -1,5 +1,9 @@
 <template>
   <div class="cart-container" v-if="!isLoading && this.items.length != 0">
+    <div style="width: 100%">
+      <h4>Sold To:</h4>
+      <input type="text" placeholder="Sold to" v-model="soldTo" />
+    </div>
     <div class="cart-item-list">
       <CartItem v-for="(item, key) in items" :item="item" :key="key" />
     </div>
@@ -7,7 +11,7 @@
       <div class="cart-panel-order-info">
         <div class="cart-panel-col">
           <div class="cart-panel-row">
-            <small>Sold to: </small>
+            <small>Sold to: {{ soldTo }}</small>
           </div>
           <div class="cart-panel-row">
             <small>Date: </small>
@@ -181,12 +185,16 @@ export default {
 /* Cart with items */
 .cart-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 100vw;
+  margin: 0rem 1rem;
 }
 
 .cart-item-list {
-  padding: 0rem 0.5rem;
+  min-width: 100%;
   max-height: 75vh;
   overflow-y: scroll;
   -ms-overflow-style: none; /* IE and Edge */

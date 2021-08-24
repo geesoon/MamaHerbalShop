@@ -69,6 +69,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 1rem;
 }
 
 .title {
@@ -90,13 +91,11 @@ export default {
   width: 100%;
   border: 2px solid var(--primary);
   color: var(--primary);
-  font-size: 1.3rem;
 }
 
 .login-input::placeholder,
 .login-input::-moz-placeholder,
 .login-input::-ms-input-placeholder {
-  font-size: 1.3rem;
   text-align: center;
   font-weight: bold;
 }

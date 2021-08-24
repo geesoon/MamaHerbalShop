@@ -1,7 +1,7 @@
 <template>
   <div class="cart-item-container">
     <div class="cart-item-pic">
-      <img :src="item.picture" v-if="item.picture != ''" />
+      <img :src="item.picUrl" v-if="item.picUrl != ''" />
       <img src="../assets/no-image.svg" v-else />
     </div>
     <div class="cart-item-details-container">
@@ -12,11 +12,11 @@
           </strong>
         </small>
         <div class="cart-item-prices">
-          <small>Cost: {{ cost }}</small>
-          <small>Price: {{ price }}</small>
+          <h6>Cost: {{ cost }}</h6>
+          <h6>Price: {{ price }}</h6>
         </div>
         <div class="cart-item-quantity">
-          <small>Quantity</small>
+          <h6>Quantity</h6>
           <small>
             <input
               type="number"
@@ -28,8 +28,8 @@
       </div>
 
       <div class="amount">
-        <small>Subtotal: {{ subtotal }}</small>
-        <small>Profit: {{ profit }}</small>
+        <h6>Subtotal: {{ subtotal }}</h6>
+        <h6>Profit: {{ profit }}</h6>
       </div>
     </div>
   </div>
@@ -70,15 +70,12 @@ export default {
   padding: 0.5rem;
   width: 100%;
   margin: 1rem 0rem;
-}
-
-.cart-item-pic {
-  max-width: 30%;
+  box-shadow: 0px 2px 0px 0px var(--accent);
 }
 
 .cart-item-pic > img {
-  width: 100%;
-  height: auto;
+  max-width: 20vw;
+  object-fit: cover;
 }
 
 .cart-item-details-container {
@@ -118,5 +115,19 @@ export default {
 
 .amount > small {
   font-weight: bold;
+}
+
+@media only screen and (min-width: 768px) {
+  .cart-item-pic > img {
+    max-width: 15vw;
+    object-fit: cover;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .cart-item-pic > img {
+    max-width: 10vw;
+    object-fit: cover;
+  }
 }
 </style>

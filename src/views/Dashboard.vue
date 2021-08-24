@@ -4,35 +4,36 @@
     <label class="close-mobile-menu" for="menu-toggle"></label>
     <div class="sidebar">
       <div class="brand">
-        <h4>Mama's Herbal</h4>
+        Mama's<br />
+        Herbal
       </div>
       <div class="sidemenu">
         <ul>
-          <li>
+          <li @click="toggleMenu()">
             <router-link to="/dashboard/product"
               ><span class="material-icons"> home </span>
               <span>Catalogue</span>
             </router-link>
           </li>
-          <li>
+          <li @click="toggleMenu()">
             <router-link to="/dashboard/cart"
               ><span class="material-icons"> shopping_basket </span>
               <span>Cart</span></router-link
             >
           </li>
-          <li>
+          <li @click="toggleMenu()">
             <router-link to="/dashboard/history"
               ><span class="material-icons"> history </span>
               <span>Order History</span></router-link
             >
           </li>
-          <li>
+          <li @click="toggleMenu()">
             <router-link to="/dashboard/statistics"
               ><span class="material-icons"> trending_up </span>
               <span>Statistics</span></router-link
             >
           </li>
-          <li>
+          <li @click="toggleMenu()">
             <a href="" @click="logout()">
               <span class="material-icons"> logout </span>
               <span>Logout</span>
@@ -42,40 +43,44 @@
       </div>
     </div>
     <header>
-      <label for="menu-toggle" class="menu-toggle">
-        <span class="material-icons"> menu </span></label
-      >
-      <div class="search-bar" v-if="this.$route.name == 'catalogue'">
-        <input
-          type="text"
-          class="search-field"
-          placeholder="search"
-          v-model="search"
-        />
+      <div class="menu-route-container">
+        <label for="menu-toggle" class="menu-toggle">
+          <span class="material-icons"> menu </span></label
+        >
+        <h2 class="route-name" v-if="this.$route.name != 'catalogue'">
+          {{ capitalizeFirstLetter(this.$route.name) }}
+        </h2>
       </div>
-      <div>
-        <router-link to="/dashboard/cart" active-class="cart-route-link">
-          <div class="cart-status">{{ cartStatus }}</div>
-          <span class="material-icons cart"> shopping_cart </span>
-        </router-link>
+      <div class="search-cart-container">
+        <div class="search-bar" v-if="this.$route.name == 'catalogue'">
+          <input
+            type="text"
+            class="search-field"
+            placeholder="search"
+            v-model="search"
+          />
+        </div>
+        <div>
+          <router-link to="/dashboard/cart" active-class="cart-route-link">
+            <div class="cart-status">{{ cartStatus }}</div>
+            <span class="material-icons cart"> shopping_cart </span>
+          </router-link>
+        </div>
       </div>
     </header>
     <section class="main-content">
       <router-view />
     </section>
-    <Loader v-show="isLoading" />
     <SnackBar v-show="isShowSnackBar" :message="snackBarMessage" />
   </div>
 </template>
 
 <script>
-import Loader from "@/components/Loading.vue";
 import SnackBar from "@/components/SnackBar.vue";
 import Auth from "@/apis/auth.js";
 
 export default {
   components: {
-    Loader,
     SnackBar,
   },
   computed: {
@@ -95,6 +100,7 @@ export default {
   data() {
     return {
       search: "",
+      viewPort: "",
     };
   },
   watch: {
@@ -103,6 +109,15 @@ export default {
     },
   },
   methods: {
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+    toggleMenu() {
+      if (this.viewPort <= 768) {
+        var input = document.getElementById("menu-toggle");
+        input.checked = !input.checked;
+      }
+    },
     showCart() {
       this.$router.push({ name: "cart" });
     },
@@ -116,10 +131,29 @@ export default {
       }
     },
   },
+  mounted() {
+    const resizeObserver = new ResizeObserver((entries) => {
+      this.viewPort = entries[0].target.clientWidth;
+    });
+
+    resizeObserver.observe(document.body);
+  },
 };
 </script>
 
 <style>
+.route-name {
+  color: white;
+  margin: 0rem 1rem;
+}
+
+.menu-route-container,
+.search-cart-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .cart-status {
   font-size: var(--icon-medium);
   background: white;
@@ -174,7 +208,7 @@ export default {
   display: none;
 }
 
-#menu-toggle:checked ~ .sidebar .brand h4 {
+#menu-toggle:checked ~ .sidebar .brand {
   display: block;
   font-size: 0.8rem;
 }
@@ -196,13 +230,15 @@ export default {
   width: 80px;
 }
 
+/* Collapse */
 #menu-toggle:checked ~ header {
   left: calc(80px + 1rem);
-  width: calc(100% - 112px);
+  width: calc(100% - 80px - 2rem);
 }
 
+/* Collapse */
 #menu-toggle:checked ~ .main-content {
-  margin-left: (80px + 1rem);
+  margin-left: calc(80px + 1rem);
 }
 
 header {
@@ -214,11 +250,17 @@ header {
   padding: 0.5rem 1rem;
   position: fixed;
   left: calc(280px + 1rem);
-  width: calc(100% - 327px);
-  top: 0.5rem;
+  width: calc(100% - 312px);
+  top: 0px;
   border-radius: 3px;
   transition: width 300ms, left 300ms;
   z-index: 1000;
+}
+
+.main-content {
+  margin-left: calc(280px + 1rem);
+  margin-top: 5rem;
+  transition: margin-left 300ms, margin-left 300ms;
 }
 
 .sidebar {
@@ -231,18 +273,16 @@ header {
   overflow-y: auto;
   overflow-x: hidden;
   transition: width 300ms;
-  z-index: 1000;
 }
 
 .brand {
+  font-size: 2rem;
+  font-weight: bold;
   padding: 0.5rem 1rem;
   display: flex;
   color: white;
   align-items: center;
-}
-
-.brand span {
-  margin-right: 0.5rem;
+  transition: font-size 300ms, font-size 300ms;
 }
 
 .side-user {
@@ -322,12 +362,6 @@ li > div {
   color: #fff;
 }
 
-.main-content {
-  margin-left: 280px;
-  margin-top: calc(70px + 1rem);
-  transition: margin-left 300ms;
-}
-
 .close-mobile-menu {
   position: fixed;
   right: 0;
@@ -342,7 +376,22 @@ li > div {
   transition: right 300ms;
 }
 
-@media only screen and (max-width: 1124px) {
+#add-fab {
+  width: 48px;
+  height: 48px;
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
+  border-radius: 100%;
+  color: white;
+  background: var(--secondary);
+}
+
+.add-fab > span {
+  font-size: 50px;
+}
+
+@media only screen and (max-width: 768px) {
   header {
     left: 0;
     top: 0;
@@ -351,6 +400,7 @@ li > div {
 
   .main-content {
     margin-left: 0;
+    width: 100%;
   }
 
   #menu-toggle ~ .sidebar .brand h4 {
@@ -386,7 +436,7 @@ li > div {
     margin-left: 0px;
   }
 
-  #menu-toggle:checked ~ .sidebar .brand h4 {
+  #menu-toggle:checked ~ .sidebar .brand {
     display: block;
   }
 
@@ -410,7 +460,11 @@ li > div {
 
   #menu-toggle:checked ~ header {
     width: calc(100% - 296px);
-    left: calc(280px + 1rem);
+    left: calc(280px + 16px);
+  }
+
+  #menu-toggle:checked ~ .main-content {
+    margin-left: calc(280px + 16px);
   }
 
   #menu-toggle:checked ~ .close-mobile-menu {
@@ -418,22 +472,6 @@ li > div {
     right: 0;
   }
 }
-
-#add-fab {
-  width: 48px;
-  height: 48px;
-  position: fixed;
-  bottom: 5%;
-  right: 5%;
-  border-radius: 100%;
-  color: white;
-  background: var(--secondary);
-}
-
-.add-fab > span {
-  font-size: 50px;
-}
-
 @media only screen and (min-width: 600px) {
   /* For tablet: */
   .view-product-info,
@@ -444,7 +482,7 @@ li > div {
 
   .view-product-picture,
   .edit-product-picture {
-    height: 500px;
+    max-height: 500px;
   }
 }
 @media only screen and (min-width: 768px) {
@@ -467,7 +505,6 @@ li > div {
     width: 50%;
   }
 }
-
 @media only screen and (min-width: 1440px) {
   /* For desktop: */
   .edit-save-btn,

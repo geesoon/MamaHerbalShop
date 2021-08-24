@@ -1,5 +1,5 @@
 <template>
-  <div class="catalogue-container">
+  <div class="catalogue-container" v-if="!isLoading">
     <div v-if="search != '' && products.length != 0">
       Search result for : {{ search }}
     </div>
@@ -32,15 +32,18 @@
       <span class="material-icons"> add </span>
     </button>
   </div>
+  <Loader v-else />
 </template>
 
 <script>
+import Loader from "@/components/Loading.vue";
 import ProductCard from "@/components/ProductCard.vue";
 import Product from "@/apis/products.js";
 
 export default {
   components: {
     ProductCard,
+    Loader,
   },
   computed: {
     products() {
@@ -104,14 +107,13 @@ export default {
 }
 
 .product-list {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  display: grid;
+  min-width: 100%;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(1, 1fr);
 }
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 768px) {
   /* For tablet: */
 
   .add-product-prompt > img {
@@ -121,7 +123,6 @@ export default {
 
   .product-list {
     display: grid;
-    width: 95%;
     grid-gap: 1rem;
     grid-template-columns: repeat(2, 1fr);
   }
@@ -139,9 +140,17 @@ export default {
   /* For tablet: */
   .product-list {
     display: grid;
-    width: 100%;
     grid-gap: 1rem;
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media only screen and (min-width: 1440px) {
+  /* For tablet: */
+  .product-list {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 </style>

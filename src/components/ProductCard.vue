@@ -1,11 +1,13 @@
 <template>
   <div class="card-container">
-    <img
-      :src="productInfo.picUrl"
-      v-if="productInfo.picUrl != ''"
-      class="product-picture"
-    />
-    <img src="../assets/no-image.svg" v-else class="product-picture" />
+    <div class="product-picture-container">
+      <img
+        :src="productInfo.picUrl"
+        v-if="productInfo.picUrl != ''"
+        class="product-picture"
+      />
+      <img src="../assets/no-image.svg" v-else class="product-picture" />
+    </div>
     <div class="product-info">
       <div class="product-name">
         <h4>{{ productInfo.name }}</h4>
@@ -52,12 +54,18 @@ export default {
   border-radius: 1rem;
   margin: 1rem 0rem;
   width: 100%;
+  height: 35vh;
+}
+
+.product-picture-container {
+  width: 100%;
+  height: 60%;
 }
 
 .product-picture {
-  height: auto;
+  height: 100%;
   width: 100%;
-  border-radius: 1rem;
+  border-radius: 1rem 1rem 0rem 0rem;
   object-fit: cover;
 }
 

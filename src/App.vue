@@ -41,30 +41,6 @@ button:hover {
   opacity: 0.9;
 }
 
-h1 {
-  font-size: 2.5rem;
-}
-
-h2 {
-  font-size: 2rem;
-}
-
-h3 {
-  font-size: 1.7rem;
-}
-
-h4 {
-  font-size: 1.5rem;
-}
-
-h5 {
-  font-size: 1.3rem;
-}
-
-h6 {
-  font-size: 1.1rem;
-}
-
 #app {
   font-family: "Passion One", cursive;
   -webkit-font-smoothing: antialiased;
