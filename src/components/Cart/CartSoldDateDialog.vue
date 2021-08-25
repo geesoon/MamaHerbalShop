@@ -1,13 +1,11 @@
 <template>
   <v-card>
-    <v-card-title> Pick a date </v-card-title>
-    <v-divider></v-divider>
     <div class="calendar-container">
       <v-date-picker v-model="selectedDate"></v-date-picker>
     </div>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" text @click="closeDialog"> Done </v-btn>
+      <v-btn color="primary" text @click="closeDialog"> Select </v-btn>
     </v-card-actions>
   </v-card>
 </template>

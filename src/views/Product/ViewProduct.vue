@@ -3,17 +3,44 @@
     <div class="view-product-info">
       <div class="view-image-container">
         <img
-          v-if="productInfo.picture != ''"
+          v-if="productInfo.picUrl != ''"
           class="view-product-picture"
           :src="productInfo.picUrl"
           :alt="productInfo.name"
+          @click="showFullProductPicture"
         />
-        <img v-else src="@/assets/no-image.svg" class="view-product-picture" />
+        <img
+          v-else
+          src="../../assets/no-image.svg"
+          class="view-product-picture"
+        />
       </div>
-      <div>
+      <div class="view-product-actions">
         <v-btn icon @click="showEditProduct()" color="primary"
           ><v-icon>mdi-pencil-circle</v-icon></v-btn
         >
+        <v-dialog v-model="dialog" persistent max-width="400">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon class="remove-product-btn" v-bind="attrs" v-on="on">
+              <v-icon>mdi-delete-circle</v-icon>
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title class="text-h5">
+              Confirm remove {{ productInfo.name }}?
+            </v-card-title>
+            <v-card-text>Product removed cannot be restored.</v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" text @click="dialog = false">
+                No
+              </v-btn>
+              <v-btn color="red darken-1" text @click="confirmRemoveProduct">
+                Yes
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
       <div class="view-product-description">
         <div class="product-title">
@@ -32,7 +59,6 @@
           {{ calculateProfit }}
         </div>
       </div>
-
       <AddToCart :productInfo="productInfo" />
     </div>
   </div>
@@ -40,19 +66,15 @@
 
 <script>
 import Product from "@/apis/products.js";
-import AddToCart from "@/components/AddToCartPanel.vue";
+import AddToCart from "@/components/Product/AddToCartPanel.vue";
 
 export default {
   data: () => {
     return {
-      input: {
-        name: "",
-        intakePrice: "",
-        sellingPrice: "",
-      },
-      showConfirmationPrompt: false,
+      dialog: false,
       productInfo: "",
       isAddToCartDialog: false,
+      isLoading: false,
     };
   },
   components: {
@@ -65,13 +87,24 @@ export default {
         parseFloat(this.productInfo.intakePrice)
       ).toFixed(2)}`;
     },
-    isLoading() {
-      return this.$store.getters.getIsLoading;
-    },
   },
   methods: {
+    showFullProductPicture() {
+      this.$router.push({
+        name: "product_picture",
+        query: { picUrl: this.productInfo.picUrl },
+      });
+    },
+    async confirmRemoveProduct() {
+      this.dialog = false;
+      this.isLoading = true;
+      await Product.removeProductById(this.productInfo.id);
+      this.$store.commit("setSnackbar", "Successfully deleted the product");
+      this.isLoading = false;
+      this.$router.replace({ name: "catalogue" });
+    },
     formatPrice(amount) {
-      return `RM ${parseFloat(amount).toFixed(2)} /kg`;
+      return `RM ${parseFloat(amount).toFixed(2)} /${this.productInfo.unit}`;
     },
     showEditProduct() {
       this.$router.push({
@@ -79,18 +112,15 @@ export default {
         query: { id: this.productInfo.id },
       });
     },
-    toggleAddToCartDialog() {
-      this.isAddToCartDialog = !this.isAddToCartDialog;
-    },
     async getProductInfo(id) {
-      this.$store.commit("setIsLoading", true);
+      this.isLoading = true;
       let res = await Product.getProductById(id);
       if (res.valid) {
         this.productInfo = res.res;
       } else {
-        this.$store.commit("setSnackBar", res.res);
+        this.$store.commit("setSnackbar", res.res);
       }
-      this.$store.commit("setIsLoading", false);
+      this.isLoading = false;
     },
   },
   created() {
@@ -100,6 +130,11 @@ export default {
 </script>
 
 <style>
+.view-product-actions {
+  display: flex;
+  flex-direction: row;
+}
+
 .product-title {
   font-size: 1.5rem;
   margin: 0.5rem 0rem;
@@ -158,9 +193,6 @@ export default {
 @media only screen and (min-width: 1024px) {
   .view-product-info {
     max-width: 100%;
-  }
-
-  .view-product-info {
     width: 50%;
   }
 }

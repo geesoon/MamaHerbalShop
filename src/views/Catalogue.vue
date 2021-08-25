@@ -28,22 +28,27 @@
       <h4>No result for: {{ search }}</h4>
     </div>
 
-    <v-btn fab id="add-fab" color="primary" @click="showAddProduct()">
+    <v-btn fab id="add-fab" color="secondary" @click="showAddProduct()">
       <v-icon>mdi-plus</v-icon>
     </v-btn>
   </section>
-  <Loader v-else />
+  <section v-else class="catalogue-container">
+    <v-progress-circular indeterminate color="primary"></v-progress-circular>
+  </section>
 </template>
 
 <script>
-import Loader from "@/components/Loading.vue";
-import ProductCard from "@/components/ProductCard.vue";
+import ProductCard from "@/components/Product/ProductCard.vue";
 import Product from "@/apis/products.js";
 
 export default {
+  data() {
+    return {
+      isLoading: true,
+    };
+  },
   components: {
     ProductCard,
-    Loader,
   },
   computed: {
     products() {
@@ -53,9 +58,6 @@ export default {
     },
     search() {
       return this.$store.getters.getSearchInput;
-    },
-    isLoading() {
-      return this.$store.getters.getIsLoading;
     },
   },
   methods: {
@@ -70,19 +72,28 @@ export default {
       if (res.valid) {
         this.$store.commit("setProducts", res.res);
       } else {
-        this.$store.commit("setSnackBar", res.res);
+        this.$store.commit("setSnackbar", res.res);
       }
-      this.$store.commit("setIsLoading", false);
+      this.isLoading = false;
     },
   },
   created() {
-    this.$store.commit("setIsLoading", true);
     this.getProducts();
   },
 };
 </script>
 
 <style>
+.sp {
+  color: navy;
+}
+.cost {
+  color: maroon;
+}
+.profit {
+  color: green;
+}
+
 .search-result-info {
   text-align: start;
   margin: 1rem 0rem;
@@ -120,6 +131,7 @@ export default {
   min-width: 100%;
   grid-gap: 1rem;
   grid-template-columns: repeat(2, 1fr);
+  margin-bottom: 8rem;
 }
 
 @media only screen and (min-width: 425px) {

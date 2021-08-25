@@ -25,10 +25,14 @@
               @click:append="showPassword = !showPassword"
               v-model="password"
             ></v-text-field>
-            <v-btn class="login-btn" @click="login()" v-if="!isLogging">
+            <v-btn text class="login-btn" @click="login()" v-if="!isLogin">
               <h4>Log In</h4>
             </v-btn>
-            <v-btn icon class="login-btn" loading v-else> </v-btn>
+            <v-progress-circular
+              indeterminate
+              v-else
+              color="primary"
+            ></v-progress-circular>
           </v-form>
           <div class="errorMessage" v-if="errorMessage != ''">
             <small>
@@ -49,7 +53,7 @@ export default {
     return {
       username: "",
       password: "",
-      isLogging: false,
+      isLogin: false,
       rules: {
         required: (value) => !!value || "Required.",
         min: (v) => v.length >= 8 || "Min 8 characters",
@@ -62,17 +66,17 @@ export default {
   methods: {
     async login() {
       this.errorMessage = "";
-      this.isLogging = true;
-      this.$store.commit("setIsLoading", true);
+      this.isLogin = true;
+      this.isLoading = true;
 
       await Auth.login(this.username, this.password).then((res) => {
         if (res.valid) {
           this.$router.replace({ name: "catalogue" });
         } else {
           this.errorMessage = res.res;
-          this.isLogging = false;
+          this.isLogin = false;
         }
-        this.$store.commit("setIsLoading", false);
+        this.isLoading = false;
       });
     },
   },
@@ -92,8 +96,8 @@ export default {
   max-width: 100vw;
   background: #f3f5f7;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -138,8 +142,6 @@ export default {
 .login-btn {
   padding: 1rem;
   margin: 1rem 0rem;
-  background: #41453e;
-  color: white;
 }
 
 @media only screen and (min-width: 768px) {

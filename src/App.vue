@@ -98,18 +98,22 @@
 
     <!-- Main Content -->
     <v-main>
+      <!-- Alert SnackBar -->
+      <v-alert
+        class="snackbar"
+        border="bottom"
+        v-show="isShowSnackBar"
+        type="success"
+        transition="fade-transition"
+        >{{ snackBarMessage }}</v-alert
+      >
       <router-view />
     </v-main>
-    <!-- Alert SnackBar -->
-    <v-alert
-      class="snackbar"
-      dismissible
-      border="bottom"
-      v-show="isShowSnackBar"
-      type="success"
-      transition="fade-transition"
-      >{{ snackBarMessage }}</v-alert
-    >
+
+    <!-- Logout overlay -->
+    <v-overlay :value="isLoading" class="logout-overlay">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </v-overlay>
   </v-app>
 </template>
 
@@ -118,9 +122,6 @@ import Auth from "@/apis/auth.js";
 export default {
   name: "App",
   computed: {
-    isLoading() {
-      return this.$store.getters.getIsLoading;
-    },
     isShowSnackBar() {
       return this.$store.getters.getSnackBar.show;
     },
@@ -144,6 +145,7 @@ export default {
       search: "",
       drawer: false,
       group: null,
+      isLoading: false,
     };
   },
   watch: {
@@ -159,13 +161,14 @@ export default {
       this.$router.push({ name: "cart" });
     },
     async logout() {
-      this.$store.commit("setIsLoading", true);
+      this.isLoading = true;
       let res = await Auth.logout();
       if (res.valid) {
-        this.$store.commit("setIsLoading", false);
+        this.isLoading = false;
         this.$router.replace({ name: "login" });
       } else {
-        alert(res.res);
+        this.isLoading = false;
+        this.$store.commit("setSnackbar", res.res);
       }
     },
   },
@@ -196,9 +199,17 @@ a {
 }
 
 .snackbar {
-  position: absolute;
-  bottom: 4%;
+  position: absolute !important;
+  top: 0px;
   z-index: 999;
+  min-width: 100%;
+  max-width: 100%;
+}
+
+.logout-overlay {
+  display: flex;
+  justify-content: center;
+  align-content: center;
 }
 
 /* Drawer */

@@ -6,7 +6,7 @@
       :src="productInfo.picUrl"
       :alt="productInfo.name"
     />
-    <img v-else src="@/assets/no-image.svg" class="edit-product-picture" />
+    <img v-else src="../../assets/no-image.svg" class="edit-product-picture" />
     <div class="edit-product-info">
       <v-text-field
         type="text"
@@ -14,7 +14,15 @@
         :placeholder="productInfo.name"
         v-model="productInfo.name"
         class="edit-product-name-field"
+        :rules="[rules.required]"
       />
+      <v-select
+        :items="units"
+        label="Unit"
+        v-model="productInfo.unit"
+        class="add-product-unit-field"
+        :rules="[rules.required]"
+      ></v-select>
       <v-text-field
         type="number"
         label="Cost"
@@ -22,6 +30,7 @@
         :placeholder="formatPrice(productInfo.intakePrice)"
         v-model="productInfo.intakePrice"
         class="edit-product-price-field"
+        :rules="[rules.required]"
       />
       <v-text-field
         label="Selling Price"
@@ -30,6 +39,7 @@
         :placeholder="formatPrice(productInfo.sellingPrice)"
         v-model="productInfo.sellingPrice"
         class="edit-product-price-field"
+        :rules="[rules.required]"
       />
       <div class="profit">
         <h6>Profit:</h6>
@@ -39,46 +49,26 @@
     <div class="edit-product-actions">
       <v-btn color="primary" @click="updateProduct()">Save</v-btn>
       <v-btn color="secondary" @click="closeDialog()">Discard</v-btn>
-      <v-dialog v-model="dialog" persistent max-width="400">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn icon class="remove-product-btn" v-bind="attrs" v-on="on">
-            <span class="material-icons"> delete </span>
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title class="text-h5">
-            Confirm remove {{ productInfo.name }}?
-          </v-card-title>
-          <v-card-text>Product removed cannot be restored.</v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="red darken-1" text @click="confirmRemoveProduct">
-              Yes
-            </v-btn>
-            <v-btn color="green darken-1" text @click="dialog = false">
-              No
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
     </div>
   </div>
-  <Loader v-else />
+  <div v-else class="edit-product-container">
+    <v-progress-circular indeterminate color="primary"></v-progress-circular>
+  </div>
 </template>
 
 <script>
-import Loader from "@/components/Loading.vue";
 import Product from "@/apis/products.js";
 
 export default {
   data: () => {
     return {
       productInfo: "",
-      dialog: false,
+      units: ["unit", "kg"],
+      rules: {
+        required: (value) => !!value || "Required.",
+      },
+      isLoading: false,
     };
-  },
-  components: {
-    Loader,
   },
   computed: {
     calculateProfit() {
@@ -86,9 +76,6 @@ export default {
         parseFloat(this.productInfo.sellingPrice) -
         parseFloat(this.productInfo.intakePrice)
       ).toFixed(2)}`;
-    },
-    isLoading() {
-      return this.$store.getters.getIsLoading;
     },
   },
   methods: {
@@ -98,35 +85,47 @@ export default {
     formatPrice(amount) {
       return `RM ${parseFloat(amount).toFixed(2)}`;
     },
-    async updateProduct() {
-      this.$store.commit("setIsLoading", true);
-      let res = await Product.updateProduct(this.productInfo);
-      if (res.valid) {
-        this.$store.commit("setIsLoading", false);
-        this.$store.commit("setSnackBar", "Product updated successfully.");
-        this.$router.go(-1);
+    validateForm() {
+      if (
+        this.productInfo.name != "" &&
+        this.productInfo.unit != "" &&
+        this.productInfo.sellingPrice != "" &&
+        this.productInfo.intakePrice != ""
+      ) {
+        return true;
       } else {
-        this.$store.commit("setIsLoading", false);
-        this.$store.commit("setSnackBar", res.res);
+        return false;
       }
     },
-    async confirmRemoveProduct() {
-      this.dialog = false;
-      this.$store.commit("setIsLoading", true);
-      await Product.removeProductById(this.productInfo.id);
-      this.$store.commit("setSnackBar", "Successfully deleted the product");
-      this.$store.commit("setIsLoading", false);
-      this.$router.replace({ name: "catalogue" });
+    async updateProduct() {
+      if (this.validateForm()) {
+        this.isLoading = true;
+        let res = await Product.updateProduct(this.productInfo);
+        if (res.valid) {
+          this.isLoading = false;
+          this.$store.commit("setSnackbar", "Product updated successfully.");
+          this.$router.go(-1);
+        } else {
+          this.isLoading = false;
+          this.$store.commit("setSnackbar", res.res);
+        }
+      } else {
+        this.$store.commit(
+          "setSnackbar",
+          "Product description cannot be empty."
+        );
+      }
     },
+
     async getProductInfo(id) {
-      this.$store.commit("setIsLoading", true);
+      this.isLoading = true;
       let res = await Product.getProductById(id);
       if (res.valid) {
         this.productInfo = res.res;
       } else {
-        this.$store.commit("setSnackBar", res.res);
+        this.$store.commit("setSnackbar", res.res);
       }
-      this.$store.commit("setIsLoading", false);
+      this.isLoading = false;
     },
   },
   created() {
@@ -159,9 +158,14 @@ export default {
 
 .edit-product-actions {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  width: 90%;
+}
+
+.edit-product-actions > button {
+  margin: 1rem 0rem;
   width: 100%;
 }
 
@@ -175,6 +179,15 @@ export default {
   .edit-product-actions,
   .edit-product-info {
     width: 50%;
+  }
+
+  .edit-product-actions {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .edit-product-actions > button {
+    width: 30%;
   }
 
   .edit-product-picture {

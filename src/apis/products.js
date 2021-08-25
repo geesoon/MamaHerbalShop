@@ -9,6 +9,7 @@ export default {
       querySnapshot.forEach((doc) => {
         products.push({
           name: doc.data().name,
+          unit: doc.data().unit,
           intakePrice: doc.data().intakePrice,
           sellingPrice: doc.data().sellingPrice,
           picUrl: doc.data().picUrl,
@@ -28,6 +29,7 @@ export default {
       querySnapshot.forEach((doc) => {
         products.push({
           name: doc.data().name,
+          unit: doc.data().unit,
           intakePrice: doc.data().intakePrice,
           sellingPrice: doc.data().sellingPrice,
           picUrl: doc.data().picUrl,
@@ -41,10 +43,8 @@ export default {
           return product.id == item.id;
         });
         cartProducts = [...cartProducts, ...temp];
-        console.log(item.quantity, cartProducts.length);
 
         cartProducts[cartProducts.length - 1].quantity = item.quantity;
-        console.log(cartProducts[cartProducts.length - 1].quantity);
       });
 
       cartProducts = cartProducts.sort((a, b) => {
@@ -62,6 +62,7 @@ export default {
       let querySnapshot = await db.collection("products").doc(id).get();
       let product = {
         name: querySnapshot.data().name,
+        unit: querySnapshot.data().unit,
         intakePrice: querySnapshot.data().intakePrice,
         sellingPrice: querySnapshot.data().sellingPrice,
         picUrl: querySnapshot.data().picUrl,
@@ -72,12 +73,12 @@ export default {
       return { valid: false, res: err };
     }
   },
-  async updateProduct({ name, intakePrice, sellingPrice, id }) {
+  async updateProduct({ name, unit, intakePrice, sellingPrice, id }) {
     try {
-      console.log(name);
       const db = firebase.firestore();
       await db.collection("products").doc(id).update({
         name: name,
+        unit: unit,
         intakePrice: intakePrice,
         sellingPrice: sellingPrice,
       });
@@ -87,7 +88,6 @@ export default {
     }
   },
   async addProduct(product) {
-    console.log(product);
     try {
       const db = firebase.firestore();
       let res = db.collection("products").add(product);

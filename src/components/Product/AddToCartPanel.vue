@@ -4,26 +4,26 @@
       <div class="add-cart-selection-container">
         <div class="add-cart-selections">
           <div>
-            <v-btn icon color="primary" @click="reduceQuantity">
-              <v-icon>mdi-minus-box</v-icon>
+            <v-btn x-large icon color="primary" @click="reduceQuantity">
+              <v-icon>mdi-minus-box-outline</v-icon>
             </v-btn>
           </div>
-          <div>{{ quantity }}g</div>
+          <div>{{ formatQuantityLabel }}</div>
           <div>
-            <v-btn icon color="primary" @click="addQuantity">
+            <v-btn x-large icon color="primary" @click="addQuantity">
               <v-icon>mdi-plus-box</v-icon>
             </v-btn>
           </div>
         </div>
-        <div class="add-cart-selections">
+        <div class="add-cart-selections cost">
           <h4>Cost:</h4>
           <span>RM{{ calculateCost }}</span>
         </div>
-        <div class="add-cart-selections">
+        <div class="add-cart-selections sp">
           <h4>Price:</h4>
           <span>RM{{ calculatePrice }}</span>
         </div>
-        <div class="add-cart-selections">
+        <div class="add-cart-selections profit">
           <h4>Profit:</h4>
           <span>{{ calculateProfit }}</span>
         </div>
@@ -39,7 +39,8 @@
 export default {
   data() {
     return {
-      quantity: 100,
+      quantity: 0,
+      step: 0,
     };
   },
   props: {
@@ -47,15 +48,28 @@ export default {
     showDialog: Boolean,
   },
   computed: {
+    formatQuantityLabel() {
+      let unit = this.productInfo.unit == "unit" ? "unit" : "g";
+      return `${this.quantity} ${unit}`;
+    },
     calculateCost() {
-      return parseFloat(
-        this.productInfo.intakePrice * (this.quantity / 1000)
-      ).toFixed(2);
+      let cost = 0;
+      if (this.productInfo.unit == "unit") {
+        cost = this.productInfo.intakePrice * this.quantity;
+      } else {
+        cost = this.productInfo.intakePrice * (this.quantity / 1000);
+      }
+
+      return parseFloat(cost).toFixed(2);
     },
     calculatePrice() {
-      return parseFloat(
-        this.productInfo.sellingPrice * (this.quantity / 1000)
-      ).toFixed(2);
+      let sp = 0;
+      if (this.productInfo.unit == "unit") {
+        sp = this.productInfo.sellingPrice * this.quantity;
+      } else {
+        sp = this.productInfo.sellingPrice * (this.quantity / 1000);
+      }
+      return parseFloat(sp).toFixed(2);
     },
     calculateProfit() {
       let profit = parseFloat(this.calculatePrice - this.calculateCost).toFixed(
@@ -70,21 +84,27 @@ export default {
   },
   methods: {
     addQuantity() {
-      this.quantity += 100;
-      this.addToCart();
+      this.quantity += this.step;
     },
     reduceQuantity() {
-      if (this.quantity >= 100) {
-        this.quantity -= 100;
-        this.addToCart();
+      if (this.quantity >= this.step) {
+        this.quantity -= this.step;
       }
     },
     addToCart() {
-      let item = {
-        quantity: this.quantity,
-        id: this.productInfo.id,
-      };
-      this.$store.commit("addToCart", item);
+      if (this.quantity == 0) {
+        this.$store.commit(
+          "setSnackbar",
+          "Quantity does not satisfies minimum amount."
+        );
+      } else {
+        let item = {
+          quantity: this.quantity,
+          id: this.productInfo.id,
+        };
+        this.$store.commit("addToCart", item);
+        this.$store.commit("setSnackbar", "Product is added to the cart.");
+      }
     },
   },
   created() {
@@ -93,6 +113,8 @@ export default {
         this.quantity = cartItem.quantity;
       }
     });
+    this.step = this.productInfo.unit == "unit" ? 1 : 100;
+    this.quantity = this.step;
   },
 };
 </script>
@@ -165,12 +187,5 @@ export default {
 
 .add-cart-dialog-action > button {
   width: 100%;
-}
-
-@media screen and (min-width: 1024px) {
-  .add-cart-dialog-action,
-  .add-cart-dialog-body {
-    width: 60%;
-  }
 }
 </style>

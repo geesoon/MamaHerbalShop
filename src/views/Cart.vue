@@ -1,73 +1,63 @@
 <template>
-  <Loader v-if="isLoading" />
-  <div class="cart-container" v-else-if="!isLoading && this.items.length != 0">
-    <div class="cart-item-list">
-      <CartItem v-for="(item, key) in items" :item="item" :key="key" />
+  <v-progress-circular
+    indeterminate
+    color="primary"
+    class="cart-container"
+    v-if="isLoading"
+  />
+  <div class="cart-container" v-else-if="!isLoading && this.cartLength != 0">
+    <div class="remove-all-btn">
+      <v-btn text color="secondary" @click="emptyCart">Remove All</v-btn>
     </div>
-
+    <div class="cart-item-list">
+      <CartItem v-for="(cartItem, key) in cart" :item="cartItem" :key="key" />
+    </div>
     <div class="cart-panel">
       <v-container fluid>
         <v-row>
-          <v-col>
-            <v-dialog v-model="showCartSoldToDialog" width="500">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn x-small color="secondary" v-bind="attrs" v-on="on"
-                  >Sold to:
-                </v-btn>
-              </template>
-              <CartSoldToDialog
-                @closeDialog="toggleCartSoldToDialog"
-                :soldTo="soldTo"
-              />
-            </v-dialog>
+          <v-col class="cart-order-description">
             <div>
-              {{ soldTo }}
+              <v-dialog v-model="showCartSoldToDialog" width="500">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="secondary" v-bind="attrs" v-on="on"
+                    >{{ soldTo == "" || soldTo == null ? "Sold to:" : soldTo }}
+                  </v-btn>
+                </template>
+                <CartSoldToDialog
+                  @closeDialog="toggleCartSoldToDialog"
+                  :soldTo="soldTo"
+                />
+              </v-dialog>
+            </div>
+            <div>
+              <v-dialog v-model="showCartSoldDateDialog" width="400">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="secondary" v-bind="attrs" v-on="on">
+                    <h4>Date:</h4>
+                    <h4>
+                      {{ soldDate }}
+                    </h4></v-btn
+                  >
+                </template>
+                <CartSoldDateDialog
+                  @closeDialog="toggleCartSoldDateDialog"
+                  :soldDate="soldDate"
+                />
+              </v-dialog>
             </div>
           </v-col>
-          <v-col>
-            <small>Total Cost:</small>
-            <small
-              ><strong>RM{{ totalCost() }}</strong></small
-            >
+          <v-col class="cart-order-prices">
+            <h4 class="cost">Total Cost:RM{{ totalCost }}</h4>
+            <h4 class="sp">Order Total:RM{{ totalPrice }}</h4>
+            <h4 class="profit">
+              Profits:
+              {{
+                totalProfit > 0 ? `+ RM ${totalProfit}` : `- RM ${totalProfit}`
+              }}
+            </h4>
           </v-col>
         </v-row>
-        <v-row>
-          <v-col>
-            <v-dialog v-model="showCartSoldDateDialog" width="400">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn x-small color="secondary" v-bind="attrs" v-on="on">
-                  <small>Date: </small>
-                  <small>
-                    {{ formattedDate }}
-                  </small></v-btn
-                >
-              </template>
-              <CartSoldDateDialog
-                @closeDialog="toggleCartSoldDateDialog"
-                :soldDate="soldDate"
-              />
-            </v-dialog>
-          </v-col>
-          <v-col>
-            <small>Order Total:</small>
-            <small>RM{{ totalPrice() }}</small>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <small
-              >Profits:
-              <small>
-                <strong>{{
-                  totalProfit() > 0
-                    ? `+ RM ${totalProfit()}`
-                    : `- RM ${totalProfit()}`
-                }}</strong>
-              </small></small
-            >
-          </v-col>
-        </v-row>
-        <v-row class="cart-actions">
+        <v-row class="cart-actions" dense>
           <v-btn color="primary" @click="checkOutOrder()">Check Out</v-btn>
         </v-row>
       </v-container>
@@ -92,10 +82,9 @@
 </template>
 
 <script>
-import Loader from "@/components/Loading.vue";
-import CartSoldToDialog from "@/components/CartSoldToDialog.vue";
-import CartSoldDateDialog from "@/components/CartSoldDateDialog.vue";
-import CartItem from "@/components/CartItem.vue";
+import CartSoldToDialog from "@/components/Cart/CartSoldToDialog.vue";
+import CartSoldDateDialog from "@/components/Cart/CartSoldDateDialog.vue";
+import CartItem from "@/components/Cart/CartItem.vue";
 import Product from "@/apis/products.js";
 
 export default {
@@ -103,26 +92,54 @@ export default {
     CartItem,
     CartSoldToDialog,
     CartSoldDateDialog,
-    Loader,
   },
   data() {
     return {
-      items: [],
       soldDate: "",
       soldTo: "",
       showCartSoldToDialog: false,
       showCartSoldDateDialog: false,
-      isLoading: true,
+      isLoading: false,
     };
   },
   computed: {
-    formattedDate() {
-      return this.soldDate;
+    cart() {
+      return this.$store.getters.getCartItem;
+    },
+    cartLength() {
+      return this.$store.getters.getCartStatus;
+    },
+    totalCost() {
+      let acc = 0;
+      for (let i = 0; i < this.cartLength; i++) {
+        let conversion = this.cart[i].unit == "unit" ? 1 : 1000;
+        acc +=
+          parseFloat(this.cart[i].intakePrice) *
+          (parseFloat(this.cart[i].quantity) / conversion);
+      }
+      return acc.toFixed(2);
+    },
+    totalPrice() {
+      let acc = 0;
+      for (let i = 0; i < this.cartLength; i++) {
+        let conversion = this.cart[i].unit == "unit" ? 1 : 1000;
+        acc +=
+          parseFloat(this.cart[i].sellingPrice) *
+          (parseFloat(this.cart[i].quantity) / conversion);
+      }
+      return acc.toFixed(2);
+    },
+    totalProfit() {
+      let profits = (this.totalPrice - this.totalCost).toFixed(2);
+      return profits;
     },
   },
   methods: {
+    emptyCart() {
+      this.$store.commit("clearCart");
+      this.resetItems();
+    },
     toggleCartSoldToDialog(value) {
-      console.log(value);
       this.showCartSoldToDialog = false;
       this.soldTo = value;
     },
@@ -130,65 +147,62 @@ export default {
       this.showCartSoldDateDialog = false;
       this.soldDate = value;
     },
-    async getItems() {
-      this.isLoading = true;
-      let cart = this.$store.getters.getCartItem;
-      if (cart.length != 0) {
-        Product.getProductsByIds(cart).then((res) => {
+    async updateCartItemInfo() {
+      if (this.cartLength != 0) {
+        let items = [];
+        // Get the latest cart items info
+        Product.getProductsByIds(this.cart).then((res) => {
           if (res.valid) {
-            this.items = res.res;
-            this.isLoading = false;
+            items = res.res;
           } else {
-            this.isLoading = false;
-            this.$store.commit("setSnackBar", res.res);
+            this.$store.commit("setSnackbar", res.res);
           }
+          // Clear all item in cart store
+          this.$store.commit("clearCart");
+
+          // Insert to cart store all cart item with latest info
+          items.forEach((cartItem) => {
+            this.$store.commit("addToCart", cartItem);
+          });
         });
       } else {
         this.resetItems();
-        this.isLoading = false;
       }
     },
     resetItems() {
-      this.items = [];
       this.soldTo = "";
+      this.soldDate = "";
     },
-    totalCost() {
-      let acc = 0;
-      for (let i = 0; i < this.items.length; i++) {
-        acc +=
-          parseFloat(this.items[i].intakePrice) *
-          (parseFloat(this.items[i].quantity) / 1000);
+    validateOrder() {
+      if (
+        this.soldTo != "" &&
+        this.soldTo != null &&
+        (this.soldDate != "") & (this.cartLength != 0)
+      ) {
+        return true;
+      } else {
+        return false;
       }
-      return acc.toFixed(2);
-    },
-    totalPrice() {
-      let acc = 0;
-      for (let i = 0; i < this.items.length; i++) {
-        acc +=
-          parseFloat(this.items[i].sellingPrice) *
-          (parseFloat(this.items[i].quantity) / 1000);
-      }
-      return acc.toFixed(2);
-    },
-    totalProfit() {
-      let profits = (this.totalPrice() - this.totalCost()).toFixed(2);
-      return profits;
     },
     async checkOutOrder() {
-      let res = await Product.checkOutOrder({
-        items: this.items,
-        soldTo: this.soldTo,
-        date: this.formattedDate,
-        totalCost: this.totalCost(),
-        totalPrice: this.totalPrice(),
-        totalProfit: this.totalProfit(),
-      });
-      if (res.valid) {
-        this.$store.commit("clearCart");
-        this.getItems();
-        this.$store.commit("setSnackBar", "Order checkout successfully");
+      if (this.validateOrder()) {
+        let res = await Product.checkOutOrder({
+          items: this.cart,
+          soldTo: this.soldTo,
+          date: this.soldDate,
+          totalCost: this.totalCost,
+          totalPrice: this.totalPrice,
+          totalProfit: this.totalProfit,
+        });
+        if (res.valid) {
+          this.$store.commit("clearCart");
+          this.updateCartItemInfo();
+          this.$store.commit("setSnackbar", "Order checkout successfully");
+        } else {
+          this.$store.commit("setSnackbar", "Order checkout failed");
+        }
       } else {
-        this.$store.commit("setSnackBar", "Order checkout failed");
+        this.$store.commit("setSnackbar", "Please complete the order details.");
       }
     },
     initiateDate() {
@@ -202,13 +216,26 @@ export default {
     },
   },
   created() {
-    this.getItems();
+    this.isLoading = true;
+    this.updateCartItemInfo();
     this.initiateDate();
+    this.isLoading = false;
   },
 };
 </script>
 
 <style>
+.cart-order-description > *,
+.cart-order-prices > * {
+  margin: 0.5rem 0rem;
+}
+
+.remove-all-btn {
+  width: 100%;
+  text-align: end;
+  margin: 0.5rem 0rem;
+}
+
 .no-item-cart-actions > button {
   width: 80%;
   margin: 1rem 0rem;
@@ -279,30 +306,15 @@ export default {
   background: white;
 }
 
-@media only screen and (min-width: 600px) {
-  .no-items-image-container > img {
-    width: 15%;
-  }
-  .cart-item-list {
-    min-width: 80%;
-    max-width: 80%;
-  }
-
-  .cart-panel {
-    left: 10%;
-    width: 80%;
-  }
-}
-
 @media only screen and (min-width: 1024px) {
   .cart-item-list {
-    min-width: 50%;
-    max-width: 50%;
+    min-width: 70%;
+    max-width: 70%;
   }
 
   .cart-panel {
-    left: 25%;
-    width: 50%;
+    left: 15%;
+    width: 70%;
   }
 }
 </style>

@@ -14,12 +14,7 @@
           v-if="productInfo.picUrl != ''"
           class="product-picture"
         />
-        <img
-          src="../assets/no-image.svg"
-          v-else
-          class="product-picture"
-          @click="showViewProduct()"
-        />
+        <img src="../../assets/no-image.svg" v-else class="product-picture" />
       </div>
       <div class="product-info">
         <div class="product-name">
@@ -39,7 +34,6 @@
       <div class="catalogue-add-cart">
         <v-btn
           elevation="0"
-          small
           color="primary"
           @click="addToCart()"
           v-if="!showQuantity"
@@ -48,17 +42,13 @@
           Add
         </v-btn>
         <div v-else class="catalogue-add-cart-actions">
-          <div>
-            <v-btn icon color="primary" @click="reduceQuantity">
-              <v-icon>mdi-minus-box</v-icon>
-            </v-btn>
-          </div>
-          <div>{{ quantity }}g</div>
-          <div>
-            <v-btn icon color="primary" @click="addQuantity">
-              <v-icon>mdi-plus-box</v-icon>
-            </v-btn>
-          </div>
+          <v-btn x-large icon color="primary" @click="reduceQuantity">
+            <v-icon>mdi-minus-box-outline</v-icon>
+          </v-btn>
+          <span>{{ formatQuantityLabel }} </span>
+          <v-btn x-large icon color="primary" @click="addQuantity">
+            <v-icon>mdi-plus-box</v-icon>
+          </v-btn>
         </div>
       </div>
     </div>
@@ -72,15 +62,23 @@ export default {
       showQuantity: false,
       isActive: false,
       quantity: 0,
+      step: 0,
     };
   },
   props: {
     productInfo: {
       id: String,
       name: String,
+      unit: String,
       intakePrice: String,
       sellingPrice: String,
       picUrl: String,
+    },
+  },
+  computed: {
+    formatQuantityLabel() {
+      let unit = this.productInfo.unit == "unit" ? "unit" : "g";
+      return `${this.quantity} ${unit}`;
     },
   },
   methods: {
@@ -92,15 +90,15 @@ export default {
       this.addQuantity();
     },
     addQuantity() {
-      this.quantity += 100;
+      this.quantity += this.step;
       this.updateCart();
     },
     reduceQuantity() {
-      if (this.quantity == 100) {
+      if (this.quantity == this.step) {
         this.quantity = 0;
         this.showQuantity = false;
-      } else if (this.quantity >= 100) {
-        this.quantity -= 100;
+      } else if (this.quantity >= this.step) {
+        this.quantity -= this.step;
       } else {
         this.showQuantity = false;
         this.quantity = 0;
@@ -128,6 +126,7 @@ export default {
         this.quantity = cartItem.quantity;
       }
     });
+    this.step = this.productInfo.unit == "unit" ? 1 : 100;
   },
 };
 </script>
@@ -194,7 +193,8 @@ export default {
 .product-name {
   text-align: start;
   flex: 1;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .intake-price {

@@ -33,17 +33,24 @@
         class="add-product-name-field"
         :rules="[rules.required]"
       />
+      <v-select
+        :items="units"
+        label="Unit"
+        v-model="unit"
+        class="add-product-unit-field"
+        :rules="[rules.required]"
+      ></v-select>
       <v-text-field
         type="number"
-        label="Cost/kg"
+        :label="formatIntakePriceLabel"
         prefix="RM"
         v-model="intakePrice"
         class="add-product-price-field"
         :rules="[rules.required]"
       />
       <v-text-field
-        label="Selling Price/kg"
         type="number"
+        :label="formatSellingPriceLabel"
         prefix="RM"
         v-model="sellingPrice"
         class="add-product-price-field"
@@ -58,7 +65,7 @@
         <v-btn color="primary" @click="addProductPipeline()">
           <h5>Save</h5>
         </v-btn>
-        <v-btn color="danger" @click="closeDialog()">
+        <v-btn color="secondary" @click="closeDialog()">
           <h5>Discard</h5>
         </v-btn>
       </div>
@@ -75,14 +82,17 @@ export default {
   data: () => {
     return {
       name: "",
+      unit: "",
       intakePrice: "",
       sellingPrice: "",
       image: "",
       progress: "",
       previewImage: "",
+      units: ["unit", "kg"],
       rules: {
         required: (value) => !!value || "Required.",
       },
+      isLoading: false,
     };
   },
   computed: {
@@ -94,11 +104,14 @@ export default {
         parseFloat(this.sellingPrice) - parseFloat(this.intakePrice)
       ).toFixed(2)}`;
     },
-    isLoading() {
-      return this.$store.getters.getIsLoading;
-    },
     formatProgress() {
       return Math.ceil(this.progress);
+    },
+    formatIntakePriceLabel() {
+      return `Cost/${this.unit}`;
+    },
+    formatSellingPriceLabel() {
+      return `Selling Price/${this.unit}`;
     },
   },
   methods: {
@@ -115,31 +128,29 @@ export default {
     },
     async addProductPipeline() {
       if (this.validateForm()) {
-        this.$store.commit("setIsLoading", true);
+        this.isLoading = true;
         if (this.image != "") {
           this.uploadPic();
         } else {
           this.addProduct();
         }
       } else {
-        alert(
+        this.$store.commit(
+          "setSnackbar",
           "1. Only accept numbers for intake or selling price. \n2. Product name cannot be empty."
         );
       }
     },
     validateForm() {
-      var number = /^[0-9]+$/;
       if (
-        this.name == "" ||
-        this.sellingPrice == "" ||
-        this.intakePrice == ""
-      ) {
-        return false;
-      } else if (
-        this.sellingPrice.match(number) ||
-        this.intakePrice.match(number)
+        this.name != "" &&
+        this.unit != "" &&
+        this.sellingPrice != "" &&
+        this.intakePrice != ""
       ) {
         return true;
+      } else {
+        return false;
       }
     },
     async uploadPic() {
@@ -192,18 +203,22 @@ export default {
       let res = await Product.addProduct({
         picUrl: url,
         name: this.name,
+        unit: this.unit,
         intakePrice: this.intakePrice,
         sellingPrice: this.sellingPrice,
       });
 
-      this.$store.commit("setIsLoading", false);
+      this.isLoading = false;
       if (!res.valid) {
-        this.$store.commit("setSnackBar", res.res);
+        this.$store.commit("setSnackbar", res.res);
       } else {
-        this.$store.commit("setSnackBar", "Added product successfully");
+        this.$store.commit("setSnackbar", "Added product successfully");
         this.$router.replace({ name: "catalogue" });
       }
     },
+  },
+  created() {
+    this.unit = this.units[0];
   },
 };
 </script>
@@ -283,11 +298,16 @@ export default {
 /* Add Product Actions Button */
 .add-product-actions {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   width: 90%;
   margin: 2rem 0rem;
+}
+
+.add-product-actions > button {
+  width: 100%;
+  margin: 1rem 0rem;
 }
 
 @media only screen and (min-width: 1024px) {
@@ -318,6 +338,12 @@ export default {
 
   .add-product-actions {
     width: 50%;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .add-product-actions > button {
+    width: 30%;
   }
 }
 </style>

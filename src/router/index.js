@@ -22,7 +22,15 @@ const routes = [
   {
     path: "/product/view",
     name: "view_product",
-    component: () => import("../views/ViewProduct.vue"),
+    component: () => import("../views/Product/ViewProduct.vue"),
+    meta: {
+      authRequired: true,
+    },
+  },
+  {
+    path: "/product/view_picture",
+    name: "product_picture",
+    component: () => import("../views/Product/ViewProductPicture.vue"),
     meta: {
       authRequired: true,
     },
@@ -30,7 +38,7 @@ const routes = [
   {
     path: "/product/edit",
     name: "edit_product",
-    component: () => import("../views/EditProduct.vue"),
+    component: () => import("../views/Product/EditProduct.vue"),
     meta: {
       authRequired: true,
     },
@@ -38,7 +46,7 @@ const routes = [
   {
     path: "/product/add",
     name: "add_product",
-    component: () => import("../views/AddProduct.vue"),
+    component: () => import("../views/Product/AddProduct.vue"),
     meta: {
       authRequired: true,
     },
@@ -46,10 +54,15 @@ const routes = [
   {
     path: "/history",
     name: "history",
-    component: () => import("../views/History.vue"),
+    component: () => import("../views/History/History.vue"),
     meta: {
       authRequired: true,
     },
+  },
+  {
+    path: "/history/detail",
+    name: "order_detail",
+    component: () => import("../views/History/HistoryOrderDetail.vue"),
   },
   {
     path: "/cart",
