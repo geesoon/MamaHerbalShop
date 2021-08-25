@@ -17,7 +17,7 @@
     ></v-data-table>
     <v-container>
       <v-col align="end">
-        <div>Order Total: {{ order.totalPrice }}</div>
+        <div style="font-weight: bold">Order Total: {{ order.totalPrice }}</div>
       </v-col>
     </v-container>
   </section>
@@ -30,8 +30,6 @@ export default {
       headers: [
         {
           text: "Product Name",
-          align: "start",
-          sortable: false,
           value: "name",
         },
         { text: "Price/Unit", value: "sellingPrice" },
@@ -40,6 +38,9 @@ export default {
         { text: "Subtotal", value: "subtotal" },
       ],
     };
+  },
+  props: {
+    order: Object,
   },
 };
 </script>

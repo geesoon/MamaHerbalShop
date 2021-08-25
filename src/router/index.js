@@ -63,6 +63,9 @@ const routes = [
     path: "/history/detail",
     name: "order_detail",
     component: () => import("../views/History/HistoryOrderDetail.vue"),
+    meta: {
+      authRequired: true,
+    },
   },
   {
     path: "/cart",
