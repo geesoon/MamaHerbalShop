@@ -45,7 +45,7 @@
         >
           <v-list-item>
             <v-list-item-title class="brand">
-              <img src="./assets/logo/android-chrome-192x192.png" />
+              <img src="./assets/logo/mama_logo.png" />
               <span>Mama's Herbal</span>
             </v-list-item-title>
           </v-list-item>

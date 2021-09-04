@@ -4,7 +4,7 @@
       <v-row>
         <v-col align="center">
           <img
-            src="../assets/logo/android-chrome-512x512.png"
+            src="../assets/logo/mama_logo.png"
             alt="logo"
             class="login-logo"
           />
